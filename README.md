@@ -4,7 +4,56 @@ Jira MCP for controlling Jira through Jira Command Line.
 
 ## Installation
 
-### Option 1: Development setup with uv
+### Install jira-cli
+
+The MCP server uses the `jira-cli` to execute Jira commands.
+
+Follow the installation instructions for your operating system:
+<https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file#installation>
+
+### Get Jira API Key
+
+Depending on your implementation of Jira (Cloud or Self-Hosted), you will need
+to use a different authentication type.
+
+Add these to your `.bashrc` or `.zshrc` file, or other shell configuration file.
+
+```bash
+# https://id.atlassian.com/manage-profile/security/api-tokens
+export JIRA_API_KEY=""
+
+# `bearer` for token,
+# `basic` for Jira account API token
+# `password` for Jira account password
+export JIRA_AUTH_TYPE="basic"
+```
+
+Make sure to `source` the file after adding the credentials.
+
+```bash
+source ~/.bashrc
+```
+
+Other ways to add credentials to your environment:
+<https://github.com/ankitpokhrel/jira-cli/discussions/356>
+
+### Start Jira CLI
+
+```bash
+jira init
+```
+
+This should initialize the Jira CLI by asking for your Jira URL and credentials.
+
+### Test Jira CLI
+
+```bash
+jira issue list
+```
+
+This should return a list of issues in Jira.
+
+### MCP Server: Option 1: Development setup with uv
 
 Get repo:
 
@@ -22,9 +71,9 @@ Usually the JSON file for the LLM client will look like this:
 ```json
 {
   "mcpServers": {
-    "weather": {
+    "jira": {
       "command": "uv",
-      "args": ["--directory", "/ABSOLUTE/PATH/TO/REPO", "run", "python", "-m", "src.main"]
+      "args": ["--directory", "/ABSOLUTE/PATH/TO/REPO/ROOT", "run", "python", "-m", "src.main"]
     }
   }
 }
@@ -35,7 +84,7 @@ called by calling `uv --directory /ABSOLUTE/PATH/TO/REPO run python -m src.main`
 
 Install UV: <https://docs.astral.sh/uv/getting-started/installation/>
 
-### Option 2: Install globally with pipx
+### MCP Server: Option 2: Install globally with pipx
 
 ```bash
 # Install pipx if you haven't already
