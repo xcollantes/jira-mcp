@@ -11,12 +11,19 @@ import textwrap
 from typing import Annotated, Any
 
 import dotenv
-import httpx
 from mcp.server.fastmcp import FastMCP
 
-from src.tools.tool_utils import format_alert, get_alerts, get_forecast, get_weather
+from src.tools.tool_utils import jira_issue_list
 
 dotenv.load_dotenv()
+
+JIRA_API_KEY: str = os.getenv("JIRA_API_KEY")
+JIRA_AUTH_TYPE: str = os.getenv("JIRA_AUTH_TYPE")
+
+if not JIRA_API_KEY or not JIRA_AUTH_TYPE:
+    raise ValueError(
+        "JIRA_API_KEY and JIRA_AUTH_TYPE must be set. See README.md for instructions to setup your Jira API key and authentication type."
+    )
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -38,96 +45,20 @@ def setup_logging(debug: bool = False) -> None:
 
 
 @mcp.tool(
-    name="get_weather",
-    title="Get weather forecast data for a location.",
-    description="Retrieves weather forecast information from the National Weather Service API for the specified location. The location should be in the format of latitude,longitude (e.g., '47.7623,-122.2054').",
+    name="jira_issue_list",
+    title="List all issues in Jira.",
+    description="Lists all issues in Jira.",
 )
-def get_weather_tool(
-    location: Annotated[
-        str,
-        "Location coordinates in 'latitude,longitude' format, for example '47.7623,-122.2054'.",
-    ],
-) -> dict[str, Any]:
-    """Get weather forecast data for a location."""
+def jira_issue_list_tool() -> dict[str, Any]:
+    """List all issues in Jira."""
 
     try:
-        return get_weather(location, WEATHER_API_KEY, WEATHER_API_BASE)
-
-    except httpx.HTTPStatusError as e:
-        logger.error(
-            "Failed to get weather forecast data for location: %s: %s", location, e
-        )
+        return jira_issue_list()
+    except ValueError as e:
+        logger.error("Error in listing issues in Jira: %s", e)
         raise e
-
 
 @mcp.tool(
-    name="get_alerts",
-    title="Get active weather alerts for a U.S. state.",
-    description="Retrieves all currently active weather alerts, warnings, and advisories issued by the National Weather Service for the specified state. This includes severe weather warnings, flood advisories, winter weather alerts, and more.",
-)
-async def get_alerts_tool(
-    state: Annotated[str, "Two-letter U.S. state code, for example 'WA' or 'CA'."],
-) -> str:
-    """Get active weather alerts for a U.S. state."""
-
-    try:
-        return "\n".join(
-            [
-                format_alert(feature)
-                for feature in get_alerts(state, WEATHER_API_KEY, WEATHER_API_BASE)[
-                    "features"
-                ]
-            ]
-        )
-
-    except httpx.HTTPStatusError as e:
-        logger.error("Failed to get active weather alerts for state: %s: %s", state, e)
-        raise e
-
-
-@mcp.tool(
-    name="get_forecast",
-    title="Get detailed weather forecast for a specific location.",
-    description="Retrieves a multi-period weather forecast from the National Weather Service for the specified coordinates. The forecast includes temperature, wind conditions, and detailed descriptions for the next 5 forecast periods (typically covering the next 2-3 days).",
-)
-async def get_forecast_tool(
-    latitude: Annotated[float, "Latitude in decimal degrees, for example 47.7623."],
-    longitude: Annotated[float, "Longitude in decimal degrees, for example -122.2054."],
-) -> str:
-    """Get detailed weather forecast for a specific location."""
-
-    try:
-        forecast_data: dict[str, Any] = await get_forecast(
-            latitude, longitude, USER_AGENT, WEATHER_API_BASE
-        )
-
-        # Format the periods into a readable forecast.
-        periods: list[dict[str, Any]] = forecast_data.get("properties", {}).get(
-            "periods", []
-        )
-        forecasts: list[str] = []
-        for period in periods[:5]:  # Only show next 5 periods.
-            forecast: str = textwrap.dedent(
-                f"""
-            {period["name"]}:
-            Temperature: {period["temperature"]}°{period["temperatureUnit"]}
-            Wind: {period["windSpeed"]} {period["windDirection"]}
-            Forecast: {period["detailedForecast"]}
-            """
-            )
-            forecasts.append(forecast)
-
-        logger.debug("Forecast data: %s", forecasts)
-        return "\n".join(forecasts)
-
-    except httpx.HTTPStatusError as e:
-        logger.error(
-            "Failed to get detailed weather forecast for location: %s: %s",
-            latitude,
-            longitude,
-            e,
-        )
-        raise e
 
 
 def main() -> None:
