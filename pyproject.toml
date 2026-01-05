@@ -14,11 +14,21 @@ dependencies = [
     "python-dotenv>=1.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
 
 [tool.ruff]
 line-length = 80
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
 
 [project.scripts]
 jira-mcp = "src.main:main"
