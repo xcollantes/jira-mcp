@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 import textwrap
-from typing import Annotated, Any
+from typing import Annotated
 
 import dotenv
 from mcp.server.fastmcp import FastMCP
@@ -28,7 +28,7 @@ from src.tools.tool_utils import (
 dotenv.load_dotenv()
 
 
-if not os.getenv("JIRA_API_KEY") or not os.getenv("JIRA_AUTH_TYPE"):
+if not os.getenv("JIRA_API_TOKEN") or not os.getenv("JIRA_AUTH_TYPE"):
     raise ValueError(
         "JIRA_API_KEY and JIRA_AUTH_TYPE must be set for `jira-cli`, the dependent tool this MCP server uses. See README.md for instructions to setup your Jira API key and authentication type."
     )
@@ -66,7 +66,7 @@ def list_tickets_tool(
     unassigned: Annotated[bool | None, "Show only unassigned tickets."] = None,
     status: Annotated[
         str | None,
-        "Filter by status (open, in progress, in review, done, closed, canceled, todo, to do).",
+        "Filter by status. Common values: Open, In Progress, Done, Closed. Your Jira may have custom statuses.",
     ] = None,
     project: Annotated[str | None, "Filter by project key (e.g., 'PROJ')."] = None,
     created_recently: Annotated[
@@ -192,21 +192,21 @@ def create_ticket_tool(
             f"Successfully created ticket {result.ticket_key}\nURL: {result.ticket_url}"
         )
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error creating ticket: %s", e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error creating ticket: {e}"
 
 
 @mcp.tool(
     name="move_ticket",
     title="Move a Jira ticket to a different status.",
-    description="Move a Jira ticket to a different status. Supported statuses: open, in progress, in review, done, closed, canceled, todo, to do.",
+    description="Move a Jira ticket to a different status. The available statuses depend on your Jira project's workflow configuration.",
 )
 def move_ticket_tool(
     ticket_key: Annotated[str, "Jira ticket key (e.g., PROJ-123)."],
     status: Annotated[
         str,
-        "Target status (open, in progress, in review, done, closed, canceled, todo, to do).",
+        "Target status. Common values: Open, In Progress, Done, Closed. Your Jira may have custom statuses.",
     ],
 ) -> str:
     """Move a Jira ticket to a different status."""
@@ -214,9 +214,9 @@ def move_ticket_tool(
         result = move_ticket(ticket_key, status)
         return result.message
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error moving ticket %s: %s", ticket_key, e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error moving ticket {ticket_key}: {e}"
 
 
 @mcp.tool(
@@ -233,9 +233,9 @@ def add_comment_tool(
         result = add_comment(ticket_key, comment)
         return result.message
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error adding comment to %s: %s", ticket_key, e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error adding comment to {ticket_key}: {e}"
 
 
 @mcp.tool(
@@ -251,9 +251,9 @@ def assign_to_me_tool(
         result = assign_to_me(ticket_key)
         return result.message
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error assigning ticket %s: %s", ticket_key, e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error assigning ticket {ticket_key}: {e}"
 
 
 @mcp.tool(
@@ -268,9 +268,9 @@ def open_ticket_in_browser_tool(
     try:
         return open_ticket_in_browser(ticket_key)
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error opening ticket %s in browser: %s", ticket_key, e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error opening ticket {ticket_key} in browser: {e}"
 
 
 @mcp.tool(
@@ -287,9 +287,9 @@ def update_ticket_description_tool(
         result = update_ticket_description(ticket_key, description)
         return result.message
 
-    except JiraCliError as e:
+    except Exception as e:
         logger.error("Error updating description for %s: %s", ticket_key, e)
-        return f"Error: {e}\n\nMake sure jira-cli is installed and authenticated."
+        return f"Error updating description for {ticket_key}: {e}"
 
 
 def main() -> None:
