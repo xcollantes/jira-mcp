@@ -141,3 +141,19 @@ client** for each **MCP server**. Each MCP client maintains a dedicated
 connection with its corresponding MCP server.
 
 <https://modelcontextprotocol.io/docs/learn/architecture>
+
+## Pitfalls / Troubleshooting
+
+## Edit the jira-cli config file
+
+On MacOS:
+
+```text
+/Users/<your-username>/.config/.jira/.config.yml
+```
+
+## 404 error when using `jira init`
+
+If you get a 404 error when using `jira init`, you may need to edit the jira-cli
+config file to point to the correct Jira instance. There are only 3 possible
+values for the auth type so try each one. `basic`, `password`, or `bearer`.
