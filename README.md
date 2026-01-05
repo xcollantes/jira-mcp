@@ -2,23 +2,6 @@
 
 Jira MCP for controlling Jira through Jira Command Line.
 
-## Development
-
-### TODOs
-
-Find `# TODO` comments and implement them.
-
-### Logging
-
-Do not use `print` statements for logging. Use the logging module instead.
-Writing to stdout will corrupt the JSON-RPC messages and break your server.
-
-## Docstrings / Tool decorator parameters
-
-MCP.tools decorator parameters are especially important as this is the human
-readable text that the LLM has context of. This will be treated as part of the
-prompt when fed to the LLM and this will decide when to use each tool.
-
 ## Installation
 
 ### Option 1: Development setup with uv
@@ -86,6 +69,19 @@ pipx install -e .
    happen:
    - The response is displayed to you with data from the MCP server
    - Some action is performed using the MCP server
+
+## Development
+
+### Logging
+
+Do not use `print` statements for logging. Use the logging module instead.
+Writing to stdout will corrupt the JSON-RPC messages and break your server.
+
+## Docstrings / Tool decorator parameters
+
+MCP.tools decorator parameters are especially important as this is the human
+readable text that the LLM has context of. This will be treated as part of the
+prompt when fed to the LLM and this will decide when to use each tool.
 
 ## Architecture
 
