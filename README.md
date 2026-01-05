@@ -1,6 +1,6 @@
-# mcp-template
+# Jira MCP
 
-MCP template.
+Jira MCP for controlling Jira through Jira Command Line.
 
 ## Development
 
@@ -26,33 +26,9 @@ prompt when fed to the LLM and this will decide when to use each tool.
 Get repo:
 
 ```bash
-git clone https://github.com/xcollantes/mcp-template.git  # TODO: Change to your own repository.
-cd mcp-template
+git clone https://github.com/xcollantes/jira-mcp.git
+cd jira-mcp
 ```
-
-Install UV: <https://docs.astral.sh/uv/getting-started/installation/>
-
-### Option 2: Install globally with pipx
-
-```bash
-# Install pipx if you haven't already
-brew install pipx
-pipx ensurepath
-
-# Clone and install the MCP server
-git clone https://github.com/xcollantes/mcp-template.git  # TODO: Change to your own repository.
-cd mcp-template
-pipx install -e .
-```
-
-Now you can run the MCP server directly:
-
-```bash
-mcp-template --help
-mcp-template --debug  # Run with debug logging
-```
-
-### Option 3: Manual setup
 
 Add MCP server to your choice of LLM client:
 
@@ -73,6 +49,21 @@ Usually the JSON file for the LLM client will look like this:
 
 This will tell your LLM client application that there's a tool that can be
 called by calling `uv --directory /ABSOLUTE/PATH/TO/REPO run python -m src.main`.
+
+Install UV: <https://docs.astral.sh/uv/getting-started/installation/>
+
+### Option 2: Install globally with pipx
+
+```bash
+# Install pipx if you haven't already
+brew install pipx
+pipx ensurepath
+
+# Clone and install the MCP server
+git clone https://github.com/xcollantes/jira-mcp.git
+cd jira-mcp
+pipx install -e .
+```
 
 ## How it works
 

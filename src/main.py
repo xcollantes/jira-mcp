@@ -21,12 +21,8 @@ dotenv.load_dotenv()
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-WEATHER_API_BASE = "https://api.weather.gov"
-WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
-USER_AGENT = "weather-app/1.0"
-
 # Create the MCP server instance.
-mcp: FastMCP = FastMCP("TODO: weather")
+mcp: FastMCP = FastMCP("Jira MCP")
 
 
 def setup_logging(debug: bool = False) -> None:

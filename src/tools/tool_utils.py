@@ -1,4 +1,4 @@
-"""TODO: Example tool helper functions.
+"""Jira MCP: Example tool helper functions.
 
 Example tool definition in main.py:
 

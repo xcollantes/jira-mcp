@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcp-template"
+name = "jira-mcp"
 version = "0.1.0"
-description = "TODO: MCP Weather Server - Provides weather tools for LLM clients"
+description = "Jira MCP for controlling Jira through Jira Command Line."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -20,4 +20,4 @@ packages = ["src"]
 line-length = 80
 
 [project.scripts]
-mcp-template = "src.main:main"
+jira-mcp = "src.main:main"
