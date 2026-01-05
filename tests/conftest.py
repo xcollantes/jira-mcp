@@ -7,9 +7,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 from src.models.jira_actions import (
     AddCommentResult,
+    AddToSprintResult,
     AssignToMeResult,
     CreateTicketResult,
+    EditTicketResult,
+    ListSprintsResult,
     MoveTicketResult,
+    RemoveFromSprintResult,
+    Sprint,
     UpdateDescriptionResult,
 )
 from src.models.jira_tickets import JiraComment, JiraTicket, JiraTicketDetail
@@ -179,6 +184,56 @@ def sample_update_description_result() -> UpdateDescriptionResult:
         success=True,
         ticket_key="TEST-123",
         message="Successfully updated description for TEST-123",
+    )
+
+
+@pytest.fixture
+def sample_sprint() -> Sprint:
+    """Create a sample Sprint for testing."""
+    return Sprint(
+        id=123,
+        name="Sprint 1",
+        state="active",
+        start_date="2024-01-01",
+        end_date="2024-01-14",
+    )
+
+
+@pytest.fixture
+def sample_list_sprints_result(sample_sprint: Sprint) -> ListSprintsResult:
+    """Create a sample ListSprintsResult for testing."""
+    return ListSprintsResult(sprints=[sample_sprint])
+
+
+@pytest.fixture
+def sample_add_to_sprint_result() -> AddToSprintResult:
+    """Create a sample AddToSprintResult for testing."""
+    return AddToSprintResult(
+        success=True,
+        ticket_key="TEST-123",
+        sprint_id=123,
+        message="Successfully added TEST-123 to sprint 123",
+    )
+
+
+@pytest.fixture
+def sample_remove_from_sprint_result() -> RemoveFromSprintResult:
+    """Create a sample RemoveFromSprintResult for testing."""
+    return RemoveFromSprintResult(
+        success=True,
+        ticket_key="TEST-123",
+        message="Successfully removed TEST-123 from its sprint",
+    )
+
+
+@pytest.fixture
+def sample_edit_ticket_result() -> EditTicketResult:
+    """Create a sample EditTicketResult for testing."""
+    return EditTicketResult(
+        success=True,
+        ticket_key="TEST-123",
+        message="Successfully updated TEST-123: summary, priority",
+        updated_fields=["summary", "priority"],
     )
 
 
