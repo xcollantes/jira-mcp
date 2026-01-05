@@ -30,7 +30,7 @@ dotenv.load_dotenv()
 
 if not os.getenv("JIRA_API_TOKEN") or not os.getenv("JIRA_AUTH_TYPE"):
     raise ValueError(
-        "JIRA_API_KEY and JIRA_AUTH_TYPE must be set for `jira-cli`, the dependent tool this MCP server uses. See README.md for instructions to setup your Jira API key and authentication type."
+        "JIRA_API_TOKEN and JIRA_AUTH_TYPE must be set for `jira-cli`, the dependent tool this MCP server uses. See README.md for instructions to setup your Jira API key and authentication type."
     )
 
 logger: logging.Logger = logging.getLogger(__name__)
