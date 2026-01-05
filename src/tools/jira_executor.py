@@ -50,6 +50,7 @@ def execute_jira_command(
             capture_output=True,
             text=True,
             input=stdin_input,
+            timeout=20,  # In seconds.
             env=os.environ,  # Needed for the JIRA_API_KEY environment variable to be set.
         )
 

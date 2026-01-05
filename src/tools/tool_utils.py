@@ -16,7 +16,6 @@ from src.models.jira_actions import (
 )
 from src.models.jira_tickets import (
     AdfDocument,
-    COMMON_STATUS_MAP,
     JiraComment,
     JiraTicket,
     JiraTicketDetail,
@@ -308,11 +307,18 @@ def get_ticket(ticket_key: str, comments: int = 5) -> JiraTicketDetail:
     comment_data = fields.get("comment", {}).get("comments", [])
     ticket_comments: list[JiraComment] = []
     for c in comment_data:
+        # Convert comment body from ADF format if needed.
+        comment_body = c.get("body", "")
+        if isinstance(comment_body, dict):
+            comment_body = _convert_adf_to_text(comment_body)
+        elif not isinstance(comment_body, str):
+            comment_body = str(comment_body)
+
         ticket_comments.append(
             JiraComment(
                 author=c.get("author", {}).get("displayName", "Unknown"),
                 created=c.get("created", ""),
-                body=c.get("body", ""),
+                body=comment_body,
             )
         )
 
@@ -533,7 +539,9 @@ def assign_to_me(ticket_key: str) -> AssignToMeResult:
     )
 
     if assign_result.exit_code != 0:
-        raise ValueError(f"Failed to assign ticket {ticket_key}: {assign_result.stderr}")
+        raise ValueError(
+            f"Failed to assign ticket {ticket_key}: {assign_result.stderr}"
+        )
 
     return AssignToMeResult(
         success=True,

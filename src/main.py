@@ -302,6 +302,7 @@ def main() -> None:
     args: argparse.Namespace = parser.parse_args()
 
     setup_logging(args.debug)
+    logger.debug("Logging is DEBUG: %s",  args.debug)
 
     logger.info("Starting Jira MCP server...")
     mcp.run(transport="stdio")
