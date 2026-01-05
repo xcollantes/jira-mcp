@@ -16,10 +16,11 @@ from src.models.jira_actions import (
 )
 from src.models.jira_tickets import (
     AdfDocument,
-    JIRA_STATUS_VALUES,
+    COMMON_STATUS_MAP,
     JiraComment,
     JiraTicket,
     JiraTicketDetail,
+    normalize_status,
 )
 from src.tools.jira_executor import CommandResult, execute_jira_command
 
@@ -60,9 +61,9 @@ def _build_jql_from_params(
     elif unassigned:
         conditions.append("assignee is EMPTY")
 
-    # Status filter.
-    if status and status in JIRA_STATUS_VALUES:
-        jira_status = JIRA_STATUS_VALUES[status]
+    # Status filter - normalize common statuses, but accept any string.
+    if status:
+        jira_status = normalize_status(status)
         conditions.append(f'status = "{jira_status}"')
 
     # Project filter.
@@ -363,7 +364,7 @@ def create_ticket(
     Returns:
         CreateTicketResult with success status and ticket info.
     """
-    args = [
+    args: list[str] = [
         "issue",
         "create",
         "--project",
@@ -391,13 +392,13 @@ def create_ticket(
             args.extend(["--component", component])
 
     # If description is provided, use stdin with template flag.
-    stdin_input = None
+    stdin_input: str | None = None
     if description:
         args.extend(["--template", "-"])
         stdin_input = description
 
     try:
-        result = execute_jira_command(args, stdin_input=stdin_input)
+        result: CommandResult = execute_jira_command(args, stdin_input=stdin_input)
 
         if result.exit_code != 0:
             return CreateTicketResult(
@@ -405,7 +406,7 @@ def create_ticket(
                 error=result.stderr or "Failed to create ticket",
             )
 
-        output = json.loads(result.stdout)
+        output: dict[str, Any] = json.loads(result.stdout)
         ticket_key = output.get("key", "")
         ticket_url = output.get("self", "")
 
@@ -431,11 +432,11 @@ def move_ticket(ticket_key: str, status: str) -> MoveTicketResult:
     Returns:
         MoveTicketResult with success status and details.
     """
-    # Map status to Jira status name.
-    target_status = JIRA_STATUS_MAP.get(status.lower(), status)
+    # Normalize status to Jira status name (handles common statuses).
+    target_status = normalize_status(status)
 
     # First, get current status.
-    view_result = execute_jira_command(
+    view_result: CommandResult = execute_jira_command(
         [
             "issue",
             "list",
@@ -449,19 +450,17 @@ def move_ticket(ticket_key: str, status: str) -> MoveTicketResult:
     )
 
     if view_result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to get current status for {ticket_key}: {view_result.stderr}",
-            exit_code=view_result.exit_code,
-            stderr=view_result.stderr,
+        raise ValueError(
+            f"Failed to get current status for {ticket_key}: {view_result.stderr}"
         )
 
     # Parse the output.
-    output_parts = view_result.stdout.strip().split("\t")
+    output_parts: list[str] = view_result.stdout.strip().split("\t")
     current_status = output_parts[1] if len(output_parts) > 1 else output_parts[0]
     current_status = current_status.strip() if current_status else "Unknown"
 
     # Move the ticket.
-    move_result = execute_jira_command(
+    move_result: CommandResult = execute_jira_command(
         [
             "issue",
             "move",
@@ -471,11 +470,7 @@ def move_ticket(ticket_key: str, status: str) -> MoveTicketResult:
     )
 
     if move_result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to move ticket {ticket_key}: {move_result.stderr}",
-            exit_code=move_result.exit_code,
-            stderr=move_result.stderr,
-        )
+        raise ValueError(f"Failed to move ticket {ticket_key}: {move_result.stderr}")
 
     return MoveTicketResult(
         success=True,
@@ -496,15 +491,11 @@ def add_comment(ticket_key: str, comment: str) -> AddCommentResult:
     Returns:
         AddCommentResult with success status.
     """
-    args = ["issue", "comment", "add", ticket_key, "--no-input"]
-    result = execute_jira_command(args, stdin_input=comment)
+    args: list[str] = ["issue", "comment", "add", ticket_key, "--no-input"]
+    result: CommandResult = execute_jira_command(args, stdin_input=comment)
 
     if result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to add comment to {ticket_key}: {result.stderr}",
-            exit_code=result.exit_code,
-            stderr=result.stderr,
-        )
+        raise ValueError(f"Failed to add comment to {ticket_key}: {result.stderr}")
 
     return AddCommentResult(
         success=True,
@@ -523,20 +514,16 @@ def assign_to_me(ticket_key: str) -> AssignToMeResult:
         AssignToMeResult with success status and assignee info.
     """
     # Get current user.
-    me_result = execute_jira_command(["me"])
+    me_result: CommandResult = execute_jira_command(["me"])
     if me_result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to get current user: {me_result.stderr}",
-            exit_code=me_result.exit_code,
-            stderr=me_result.stderr,
-        )
+        raise ValueError(f"Failed to get current user: {me_result.stderr}")
 
-    current_user = me_result.stdout.strip()
+    current_user: str = me_result.stdout.strip()
     if not current_user:
         raise ValueError("Unable to determine current user")
 
     # Assign the ticket.
-    assign_result = execute_jira_command(
+    assign_result: CommandResult = execute_jira_command(
         [
             "issue",
             "assign",
@@ -546,11 +533,7 @@ def assign_to_me(ticket_key: str) -> AssignToMeResult:
     )
 
     if assign_result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to assign ticket {ticket_key}: {assign_result.stderr}",
-            exit_code=assign_result.exit_code,
-            stderr=assign_result.stderr,
-        )
+        raise ValueError(f"Failed to assign ticket {ticket_key}: {assign_result.stderr}")
 
     return AssignToMeResult(
         success=True,
@@ -569,13 +552,11 @@ def open_ticket_in_browser(ticket_key: str) -> str:
     Returns:
         Success message.
     """
-    result = execute_jira_command(["open", ticket_key])
+    result: CommandResult = execute_jira_command(["open", ticket_key])
 
     if result.exit_code != 0:
-        raise JiraCliError(
-            f"Failed to open ticket {ticket_key} in browser: {result.stderr}",
-            exit_code=result.exit_code,
-            stderr=result.stderr,
+        raise ValueError(
+            f"Failed to open ticket {ticket_key} in browser: {result.stderr}"
         )
 
     return f"Successfully opened ticket {ticket_key} in browser"
