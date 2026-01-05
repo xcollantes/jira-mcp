@@ -5,18 +5,23 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from src.models.jira_tickets import JiraTicket, JiraTicketDetail
 from src.tools.jira_executor import CommandResult
 from src.tools.tool_utils import (
     _build_jql_from_params,
     _convert_adf_to_text,
     add_comment,
+    add_to_sprint,
     assign_to_me,
     create_ticket,
+    edit_ticket,
     get_ticket,
+    list_sprints,
     list_tickets,
     move_ticket,
     open_ticket_in_browser,
+    remove_from_sprint,
     update_ticket_description,
 )
 
@@ -814,3 +819,476 @@ class TestUpdateTicketDescription:
             update_ticket_description("TEST-123", "Description")
 
         assert "Failed to update ticket" in str(exc_info.value)
+
+
+class TestListSprints:
+    """Tests for list_sprints function."""
+
+    def test_list_sprints_success(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test listing sprints successfully."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14\n456\tSprint 2\tfuture\t2024-01-15\t2024-01-28",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = list_sprints(board_id=1)
+
+        assert len(result.sprints) == 2
+        assert result.sprints[0].id == 123
+        assert result.sprints[0].name == "Sprint 1"
+        assert result.sprints[0].state == "active"
+        assert result.sprints[0].start_date == "2024-01-01"
+        assert result.sprints[0].end_date == "2024-01-14"
+        assert result.sprints[1].id == 456
+        assert result.sprints[1].name == "Sprint 2"
+        assert result.sprints[1].state == "future"
+
+    def test_list_sprints_with_state_filter(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test listing sprints with state filter."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14",
+            stderr="",
+            exit_code=0,
+        )
+
+        list_sprints(board_id=1, state="active")
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--state" in call_args
+        assert "active" in call_args
+
+    def test_list_sprints_with_limit(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test listing sprints with limit."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14",
+            stderr="",
+            exit_code=0,
+        )
+
+        list_sprints(board_id=1, limit=10)
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--paginate" in call_args
+        assert "0:10" in call_args
+
+    def test_list_sprints_no_results(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test listing sprints with no results."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="No result found",
+            exit_code=1,
+        )
+
+        result = list_sprints(board_id=1)
+
+        assert result.sprints == []
+
+    def test_list_sprints_no_sprints_found(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test listing sprints with 'no sprints' message."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="no sprints found for board",
+            exit_code=1,
+        )
+
+        result = list_sprints(board_id=1)
+
+        assert result.sprints == []
+
+    def test_list_sprints_error(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test listing sprints with error."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="Permission denied",
+            exit_code=1,
+        )
+
+        with pytest.raises(ValueError) as exc_info:
+            list_sprints(board_id=1)
+
+        assert "Failed to list sprints" in str(exc_info.value)
+
+    def test_list_sprints_partial_columns(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test listing sprints with only required columns."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="123\tSprint 1\tactive",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = list_sprints(board_id=1)
+
+        assert len(result.sprints) == 1
+        assert result.sprints[0].id == 123
+        assert result.sprints[0].name == "Sprint 1"
+        assert result.sprints[0].state == "active"
+        assert result.sprints[0].start_date is None
+        assert result.sprints[0].end_date is None
+
+
+class TestAddToSprint:
+    """Tests for add_to_sprint function."""
+
+    def test_add_to_sprint_success(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test adding ticket to sprint successfully."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = add_to_sprint("TEST-123", sprint_id=456)
+
+        assert result.success is True
+        assert result.ticket_key == "TEST-123"
+        assert result.sprint_id == 456
+        assert "Successfully added TEST-123 to sprint 456" in result.message
+
+    def test_add_to_sprint_command_args(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test add_to_sprint command arguments."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        add_to_sprint("TEST-123", sprint_id=789)
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "sprint" in call_args
+        assert "add" in call_args
+        assert "789" in call_args
+        assert "TEST-123" in call_args
+
+    def test_add_to_sprint_failure(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test adding ticket to sprint with failure."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="Sprint not found",
+            exit_code=1,
+        )
+
+        with pytest.raises(ValueError) as exc_info:
+            add_to_sprint("TEST-123", sprint_id=999)
+
+        assert "Failed to add TEST-123 to sprint 999" in str(exc_info.value)
+
+
+class TestRemoveFromSprint:
+    """Tests for remove_from_sprint function."""
+
+    def test_remove_from_sprint_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test removing ticket from sprint successfully."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = remove_from_sprint("TEST-123")
+
+        assert result.success is True
+        assert result.ticket_key == "TEST-123"
+        assert "Successfully removed TEST-123 from its sprint" in result.message
+
+    def test_remove_from_sprint_command_args(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test remove_from_sprint command arguments."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        remove_from_sprint("TEST-456")
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "issue" in call_args
+        assert "edit" in call_args
+        assert "TEST-456" in call_args
+        assert "--custom" in call_args
+        assert "sprint=" in call_args
+        assert "--no-input" in call_args
+
+    def test_remove_from_sprint_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test removing ticket from sprint with failure."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="Ticket not found",
+            exit_code=1,
+        )
+
+        with pytest.raises(ValueError) as exc_info:
+            remove_from_sprint("INVALID-999")
+
+        assert "Failed to remove INVALID-999 from sprint" in str(exc_info.value)
+
+
+class TestEditTicket:
+    """Tests for edit_ticket function."""
+
+    def test_edit_ticket_summary(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket summary."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", summary="New summary")
+
+        assert result.success is True
+        assert result.ticket_key == "TEST-123"
+        assert "summary" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--summary" in call_args
+        assert "New summary" in call_args
+
+    def test_edit_ticket_priority(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket priority."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", priority="High")
+
+        assert result.success is True
+        assert "priority" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--priority" in call_args
+        assert "High" in call_args
+
+    def test_edit_ticket_assignee(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket assignee."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", assignee="john.doe")
+
+        assert result.success is True
+        assert "assignee" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--assignee" in call_args
+        assert "john.doe" in call_args
+
+    def test_edit_ticket_unassign(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test unassigning ticket."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", assignee="")
+
+        assert result.success is True
+        assert "assignee" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--assignee" in call_args
+        assert "x" in call_args
+
+    def test_edit_ticket_labels(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket labels."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", labels=["bug", "urgent"])
+
+        assert result.success is True
+        assert "labels" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        label_count = call_args.count("--label")
+        assert label_count == 2
+
+    def test_edit_ticket_add_labels(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test adding labels to ticket."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", add_labels=["new-label"])
+
+        assert result.success is True
+        assert "labels (added)" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--label" in call_args
+        assert "+new-label" in call_args
+
+    def test_edit_ticket_remove_labels(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test removing labels from ticket."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", remove_labels=["old-label"])
+
+        assert result.success is True
+        assert "labels (removed)" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--label" in call_args
+        assert "-old-label" in call_args
+
+    def test_edit_ticket_components(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket components."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", components=["backend", "api"])
+
+        assert result.success is True
+        assert "components" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        component_count = call_args.count("--component")
+        assert component_count == 2
+
+    def test_edit_ticket_fix_versions(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test editing ticket fix versions."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", fix_versions=["1.0.0", "1.1.0"])
+
+        assert result.success is True
+        assert "fix_versions" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        version_count = call_args.count("--fix-version")
+        assert version_count == 2
+
+    def test_edit_ticket_parent(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket parent."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket("TEST-123", parent="TEST-100")
+
+        assert result.success is True
+        assert "parent" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        assert "--parent" in call_args
+        assert "TEST-100" in call_args
+
+    def test_edit_ticket_custom_fields(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test editing ticket custom fields."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket(
+            "TEST-123",
+            custom_fields={"customfield_10001": "value1", "story_points": "5"},
+        )
+
+        assert result.success is True
+        assert "custom:customfield_10001" in result.updated_fields
+        assert "custom:story_points" in result.updated_fields
+
+        call_args = mock_execute_jira_command.call_args[0][0]
+        custom_count = call_args.count("--custom")
+        assert custom_count == 2
+
+    def test_edit_ticket_multiple_fields(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test editing multiple ticket fields at once."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="",
+            exit_code=0,
+        )
+
+        result = edit_ticket(
+            "TEST-123",
+            summary="Updated summary",
+            priority="Critical",
+            assignee="jane.doe",
+            labels=["critical-bug"],
+        )
+
+        assert result.success is True
+        assert "summary" in result.updated_fields
+        assert "priority" in result.updated_fields
+        assert "assignee" in result.updated_fields
+        assert "labels" in result.updated_fields
+
+    def test_edit_ticket_no_fields_specified(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
+        """Test editing ticket with no fields specified."""
+        result = edit_ticket("TEST-123")
+
+        assert result.success is False
+        assert "No fields specified to update" in result.message
+        assert result.updated_fields == []
+
+        # Verify command was not called.
+        mock_execute_jira_command.assert_not_called()
+
+    def test_edit_ticket_failure(self, mock_execute_jira_command: MagicMock) -> None:
+        """Test editing ticket with failure."""
+        mock_execute_jira_command.return_value = CommandResult(
+            stdout="",
+            stderr="Permission denied",
+            exit_code=1,
+        )
+
+        with pytest.raises(ValueError) as exc_info:
+            edit_ticket("TEST-123", summary="New summary")
+
+        assert "Failed to edit ticket TEST-123" in str(exc_info.value)

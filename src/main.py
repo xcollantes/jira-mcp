@@ -16,12 +16,16 @@ from mcp.server.fastmcp import FastMCP
 from src.tools.tool_utils import (
     JiraTicket,
     add_comment,
+    add_to_sprint,
     assign_to_me,
     create_ticket,
+    edit_ticket,
     get_ticket,
+    list_sprints,
     list_tickets,
     move_ticket,
     open_ticket_in_browser,
+    remove_from_sprint,
     update_ticket_description,
 )
 
@@ -292,6 +296,136 @@ def update_ticket_description_tool(
         return f"Error updating description for {ticket_key}: {e}"
 
 
+@mcp.tool(
+    name="list_sprints",
+    title="List sprints from a Jira board.",
+    description="List all sprints from a Jira board. Can filter by sprint state (active, future, closed).",
+)
+def list_sprints_tool(
+    board_id: Annotated[int, "Jira board ID to list sprints from."],
+    state: Annotated[
+        str | None,
+        "Filter sprints by state (active, future, closed).",
+    ] = None,
+    limit: Annotated[int, "Maximum number of sprints to return (default 20)."] = 20,
+) -> str:
+    """List sprints from a Jira board."""
+    try:
+        result = list_sprints(board_id=board_id, state=state, limit=limit)
+
+        if not result.sprints:
+            return "No sprints found."
+
+        sprint_list: list[str] = []
+        for s in result.sprints:
+            date_info = ""
+            if s.start_date:
+                date_info += f" | Start: {s.start_date}"
+            if s.end_date:
+                date_info += f" | End: {s.end_date}"
+            sprint_list.append(
+                f"Sprint {s.id}: {s.name}\n  State: {s.state}{date_info}"
+            )
+
+        return "\n\n".join(sprint_list)
+
+    except Exception as e:
+        logger.error("Error listing sprints for board %d: %s", board_id, e)
+        return f"Error listing sprints: {e}"
+
+
+@mcp.tool(
+    name="add_to_sprint",
+    title="Add a Jira ticket to a sprint.",
+    description="Add a Jira ticket to a specific sprint by sprint ID. Use list_sprints to find available sprint IDs.",
+)
+def add_to_sprint_tool(
+    ticket_key: Annotated[str, "Jira ticket key (e.g., PROJ-123)."],
+    sprint_id: Annotated[int, "Sprint ID to add the ticket to."],
+) -> str:
+    """Add a Jira ticket to a sprint."""
+    try:
+        result = add_to_sprint(ticket_key, sprint_id)
+        return result.message
+
+    except Exception as e:
+        logger.error("Error adding %s to sprint %d: %s", ticket_key, sprint_id, e)
+        return f"Error adding {ticket_key} to sprint: {e}"
+
+
+@mcp.tool(
+    name="remove_from_sprint",
+    title="Remove a Jira ticket from its current sprint.",
+    description="Remove a Jira ticket from its current sprint. The ticket will be moved to the backlog.",
+)
+def remove_from_sprint_tool(
+    ticket_key: Annotated[str, "Jira ticket key (e.g., PROJ-123)."],
+) -> str:
+    """Remove a Jira ticket from its current sprint."""
+    try:
+        result = remove_from_sprint(ticket_key)
+        return result.message
+
+    except Exception as e:
+        logger.error("Error removing %s from sprint: %s", ticket_key, e)
+        return f"Error removing {ticket_key} from sprint: {e}"
+
+
+@mcp.tool(
+    name="edit_ticket",
+    title="Edit fields on a Jira ticket.",
+    description="Edit various fields on a Jira ticket including summary, priority, assignee, labels, components, fix versions, parent, and custom fields.",
+)
+def edit_ticket_tool(
+    ticket_key: Annotated[str, "Jira ticket key (e.g., PROJ-123)."],
+    summary: Annotated[str | None, "New summary/title for the ticket."] = None,
+    priority: Annotated[
+        str | None, "New priority level (e.g., High, Medium, Low)."
+    ] = None,
+    assignee: Annotated[
+        str | None,
+        "New assignee username or email (use empty string to unassign).",
+    ] = None,
+    labels: Annotated[
+        list[str] | None, "Labels to set on the ticket (replaces existing labels)."
+    ] = None,
+    add_labels: Annotated[list[str] | None, "Labels to add to the ticket."] = None,
+    remove_labels: Annotated[
+        list[str] | None, "Labels to remove from the ticket."
+    ] = None,
+    components: Annotated[list[str] | None, "Components to set on the ticket."] = None,
+    fix_versions: Annotated[
+        list[str] | None, "Fix versions to set on the ticket."
+    ] = None,
+    parent: Annotated[
+        str | None, "Parent issue key (for subtasks/child issues)."
+    ] = None,
+    custom_fields: Annotated[
+        dict[str, str] | None, "Custom fields to set (key-value pairs)."
+    ] = None,
+) -> str:
+    """Edit fields on a Jira ticket."""
+    try:
+        result = edit_ticket(
+            ticket_key=ticket_key,
+            summary=summary,
+            priority=priority,
+            assignee=assignee,
+            labels=labels,
+            add_labels=add_labels,
+            remove_labels=remove_labels,
+            components=components,
+            fix_versions=fix_versions,
+            parent=parent,
+            custom_fields=custom_fields,
+        )
+        return result.message
+
+    except Exception as e:
+        logger.error("Error editing ticket %s: %s", ticket_key, e)
+        return f"Error editing ticket {ticket_key}: {e}"
+
+
 def main() -> None:
     """Main entry point for the MCP server."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
@@ -302,7 +436,7 @@ def main() -> None:
     args: argparse.Namespace = parser.parse_args()
 
     setup_logging(args.debug)
-    logger.debug("Logging is DEBUG: %s",  args.debug)
+    logger.debug("Logging is DEBUG: %s", args.debug)
 
     logger.info("Starting Jira MCP server...")
     mcp.run(transport="stdio")

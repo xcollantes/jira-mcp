@@ -9,9 +9,14 @@ from typing import Any
 
 from src.models.jira_actions import (
     AddCommentResult,
+    AddToSprintResult,
     AssignToMeResult,
     CreateTicketResult,
+    EditTicketResult,
+    ListSprintsResult,
     MoveTicketResult,
+    RemoveFromSprintResult,
+    Sprint,
     UpdateDescriptionResult,
 )
 from src.models.jira_tickets import (
@@ -592,4 +597,227 @@ def update_ticket_description(
         success=True,
         ticket_key=ticket_key,
         message=f"Successfully updated description for {ticket_key}",
+    )
+
+
+def list_sprints(
+    board_id: int,
+    state: str | None = None,
+    limit: int = 20,
+) -> ListSprintsResult:
+    """List sprints from a Jira board.
+
+    Args:
+        board_id: Jira board ID to list sprints from.
+        state: Filter sprints by state (active, future, closed).
+        limit: Maximum number of sprints to return.
+
+    Returns:
+        ListSprintsResult with list of sprints.
+    """
+    args: list[str] = [
+        "sprint",
+        "list",
+        "--board",
+        str(board_id),
+        "--plain",
+        "--no-headers",
+        "--columns",
+        "id,name,state,startdate,enddate",
+    ]
+
+    if state:
+        args.extend(["--state", state])
+
+    if limit > 0:
+        args.extend(["--paginate", f"0:{limit}"])
+
+    result: CommandResult = execute_jira_command(args)
+
+    if result.exit_code != 0:
+        # Check if it's just "no sprints found" which is not an error.
+        if "No result found" in result.stderr or "no sprints" in result.stderr.lower():
+            return ListSprintsResult(sprints=[])
+        raise ValueError(f"Failed to list sprints: {result.stderr}")
+
+    # Parse the plain text output.
+    lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
+
+    sprints: list[Sprint] = []
+    for line in lines:
+        columns = [col.strip() for col in line.split("\t") if col.strip()]
+
+        if len(columns) >= 3:
+            sprints.append(
+                Sprint(
+                    id=int(columns[0]),
+                    name=columns[1],
+                    state=columns[2],
+                    start_date=columns[3] if len(columns) > 3 else None,
+                    end_date=columns[4] if len(columns) > 4 else None,
+                )
+            )
+
+    return ListSprintsResult(sprints=sprints)
+
+
+def add_to_sprint(ticket_key: str, sprint_id: int) -> AddToSprintResult:
+    """Add a Jira ticket to a sprint.
+
+    Args:
+        ticket_key: Jira ticket key (e.g., PROJ-123).
+        sprint_id: Sprint ID to add the ticket to.
+
+    Returns:
+        AddToSprintResult with success status.
+    """
+    args: list[str] = ["sprint", "add", str(sprint_id), ticket_key]
+
+    result: CommandResult = execute_jira_command(args)
+
+    if result.exit_code != 0:
+        raise ValueError(
+            f"Failed to add {ticket_key} to sprint {sprint_id}: {result.stderr}"
+        )
+
+    return AddToSprintResult(
+        success=True,
+        ticket_key=ticket_key,
+        sprint_id=sprint_id,
+        message=f"Successfully added {ticket_key} to sprint {sprint_id}",
+    )
+
+
+def remove_from_sprint(ticket_key: str) -> RemoveFromSprintResult:
+    """Remove a Jira ticket from its current sprint.
+
+    Args:
+        ticket_key: Jira ticket key (e.g., PROJ-123).
+
+    Returns:
+        RemoveFromSprintResult with success status.
+    """
+    # To remove from sprint, we edit the issue and set sprint to empty.
+    args: list[str] = ["issue", "edit", ticket_key, "--custom", "sprint=", "--no-input"]
+
+    result: CommandResult = execute_jira_command(args)
+
+    if result.exit_code != 0:
+        raise ValueError(f"Failed to remove {ticket_key} from sprint: {result.stderr}")
+
+    return RemoveFromSprintResult(
+        success=True,
+        ticket_key=ticket_key,
+        message=f"Successfully removed {ticket_key} from its sprint",
+    )
+
+
+def edit_ticket(
+    ticket_key: str,
+    summary: str | None = None,
+    priority: str | None = None,
+    assignee: str | None = None,
+    labels: list[str] | None = None,
+    add_labels: list[str] | None = None,
+    remove_labels: list[str] | None = None,
+    components: list[str] | None = None,
+    fix_versions: list[str] | None = None,
+    parent: str | None = None,
+    custom_fields: dict[str, str] | None = None,
+) -> EditTicketResult:
+    """Edit fields on a Jira ticket.
+
+    Args:
+        ticket_key: Jira ticket key (e.g., PROJ-123).
+        summary: New summary/title for the ticket.
+        priority: New priority level (e.g., High, Medium, Low).
+        assignee: New assignee username or email (use empty string to unassign).
+        labels: Labels to set on the ticket (replaces existing labels).
+        add_labels: Labels to add to the ticket.
+        remove_labels: Labels to remove from the ticket.
+        components: Components to set on the ticket.
+        fix_versions: Fix versions to set on the ticket.
+        parent: Parent issue key (for subtasks/child issues).
+        custom_fields: Custom fields to set (key-value pairs).
+
+    Returns:
+        EditTicketResult with success status and list of updated fields.
+    """
+    args: list[str] = ["issue", "edit", ticket_key, "--no-input"]
+    updated_fields: list[str] = []
+
+    if summary:
+        args.extend(["--summary", summary])
+        updated_fields.append("summary")
+
+    if priority:
+        args.extend(["--priority", priority])
+        updated_fields.append("priority")
+
+    if assignee is not None:
+        if assignee == "":
+            # Unassign by setting to "x" (jira-cli convention).
+            args.extend(["--assignee", "x"])
+        else:
+            args.extend(["--assignee", assignee])
+        updated_fields.append("assignee")
+
+    # Handle labels.
+    if labels:
+        for label in labels:
+            args.extend(["--label", label])
+        updated_fields.append("labels")
+
+    if add_labels:
+        for label in add_labels:
+            args.extend(["--label", f"+{label}"])
+        updated_fields.append("labels (added)")
+
+    if remove_labels:
+        for label in remove_labels:
+            args.extend(["--label", f"-{label}"])
+        updated_fields.append("labels (removed)")
+
+    # Handle components.
+    if components:
+        for component in components:
+            args.extend(["--component", component])
+        updated_fields.append("components")
+
+    # Handle fix versions.
+    if fix_versions:
+        for version in fix_versions:
+            args.extend(["--fix-version", version])
+        updated_fields.append("fix_versions")
+
+    # Handle parent issue.
+    if parent:
+        args.extend(["--parent", parent])
+        updated_fields.append("parent")
+
+    # Handle custom fields.
+    if custom_fields:
+        for key, value in custom_fields.items():
+            args.extend(["--custom", f"{key}={value}"])
+            updated_fields.append(f"custom:{key}")
+
+    # Check if any fields were specified.
+    if not updated_fields:
+        return EditTicketResult(
+            success=False,
+            ticket_key=ticket_key,
+            message="No fields specified to update",
+            updated_fields=[],
+        )
+
+    result: CommandResult = execute_jira_command(args)
+
+    if result.exit_code != 0:
+        raise ValueError(f"Failed to edit ticket {ticket_key}: {result.stderr}")
+
+    return EditTicketResult(
+        success=True,
+        ticket_key=ticket_key,
+        message=f"Successfully updated {ticket_key}: {', '.join(updated_fields)}",
+        updated_fields=updated_fields,
     )
