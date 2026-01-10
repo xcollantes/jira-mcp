@@ -30,5 +30,10 @@ line-length = 80
 testpaths = ["tests"]
 pythonpath = ["."]
 
+[dependency-groups]
+dev = [
+    "ruff>=0.14.11",
+]
+
 [project.scripts]
 jira-mcp = "src.main:main"
