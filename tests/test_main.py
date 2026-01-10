@@ -4,8 +4,6 @@ import logging
 import sys
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 # Need to mock the environment variables before importing main.
 with patch.dict(
     "os.environ",
@@ -85,7 +83,9 @@ class TestListTicketsTool:
         assert "John Doe" in result
 
     @patch("src.main.list_tickets")
-    def test_list_tickets_no_results(self, mock_list_tickets: MagicMock) -> None:
+    def test_list_tickets_no_results(
+        self, mock_list_tickets: MagicMock
+    ) -> None:
         """Test list_tickets_tool with no results."""
         mock_list_tickets.return_value = []
 
@@ -104,7 +104,9 @@ class TestListTicketsTool:
         assert "Test error" in result
 
     @patch("src.main.list_tickets")
-    def test_list_tickets_with_filters(self, mock_list_tickets: MagicMock) -> None:
+    def test_list_tickets_with_filters(
+        self, mock_list_tickets: MagicMock
+    ) -> None:
         """Test list_tickets_tool passes filters correctly."""
         mock_list_tickets.return_value = []
 
@@ -167,7 +169,9 @@ class TestGetTicketTool:
         assert "Test comment" in result
 
     @patch("src.main.get_ticket")
-    def test_get_ticket_no_description(self, mock_get_ticket: MagicMock) -> None:
+    def test_get_ticket_no_description(
+        self, mock_get_ticket: MagicMock
+    ) -> None:
         """Test get_ticket_tool with no description."""
         from src.models.jira_tickets import JiraTicketDetail
 
@@ -256,7 +260,9 @@ class TestCreateTicketTool:
         assert "Project not found" in result
 
     @patch("src.main.create_ticket")
-    def test_create_ticket_exception(self, mock_create_ticket: MagicMock) -> None:
+    def test_create_ticket_exception(
+        self, mock_create_ticket: MagicMock
+    ) -> None:
         """Test create_ticket_tool with exception."""
         mock_create_ticket.side_effect = Exception("Network error")
 
@@ -362,7 +368,9 @@ class TestOpenTicketInBrowserTool:
     @patch("src.main.open_ticket_in_browser")
     def test_open_ticket_success(self, mock_open_ticket: MagicMock) -> None:
         """Test open_ticket_in_browser_tool success."""
-        mock_open_ticket.return_value = "Successfully opened ticket TEST-123 in browser"
+        mock_open_ticket.return_value = (
+            "Successfully opened ticket TEST-123 in browser"
+        )
 
         result = open_ticket_in_browser_tool("TEST-123")
 
@@ -399,7 +407,9 @@ class TestUpdateTicketDescriptionTool:
         assert "Successfully updated" in result
 
     @patch("src.main.update_ticket_description")
-    def test_update_description_error(self, mock_update_description: MagicMock) -> None:
+    def test_update_description_error(
+        self, mock_update_description: MagicMock
+    ) -> None:
         """Test update_ticket_description_tool with error."""
         mock_update_description.side_effect = ValueError("Permission denied")
 

@@ -1,6 +1,7 @@
 """Tests for jira_tickets module."""
 
 import pytest
+
 from src.models.jira_tickets import (
     COMMON_STATUS_MAP,
     JiraComment,
@@ -181,7 +182,9 @@ class TestJiraTicket:
 class TestJiraTicketDetail:
     """Tests for JiraTicketDetail model."""
 
-    def test_ticket_detail_creation(self, sample_jira_comment: JiraComment) -> None:
+    def test_ticket_detail_creation(
+        self, sample_jira_comment: JiraComment
+    ) -> None:
         """Test creating a JiraTicketDetail instance."""
         detail = JiraTicketDetail(
             key="TEST-123",
@@ -239,7 +242,7 @@ class TestJiraTicketDetail:
         comments = [
             JiraComment(
                 author=f"User {i}",
-                created=f"2024-01-{10+i}T10:00:00.000+0000",
+                created=f"2024-01-{10 + i}T10:00:00.000+0000",
                 body=f"Comment {i}",
             )
             for i in range(5)

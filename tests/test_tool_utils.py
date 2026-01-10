@@ -2,11 +2,10 @@
 
 import json
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from src.models.jira_tickets import JiraTicket, JiraTicketDetail
 from src.tools.jira_executor import CommandResult
 from src.tools.tool_utils import (
     _build_jql_from_params,
@@ -165,7 +164,9 @@ class TestConvertAdfToText:
                             "content": [
                                 {
                                     "type": "paragraph",
-                                    "content": [{"type": "text", "text": "Item 1"}],
+                                    "content": [
+                                        {"type": "text", "text": "Item 1"}
+                                    ],
                                 }
                             ],
                         },
@@ -174,7 +175,9 @@ class TestConvertAdfToText:
                             "content": [
                                 {
                                     "type": "paragraph",
-                                    "content": [{"type": "text", "text": "Item 2"}],
+                                    "content": [
+                                        {"type": "text", "text": "Item 2"}
+                                    ],
                                 }
                             ],
                         },
@@ -201,7 +204,9 @@ class TestConvertAdfToText:
                             "content": [
                                 {
                                     "type": "paragraph",
-                                    "content": [{"type": "text", "text": "First"}],
+                                    "content": [
+                                        {"type": "text", "text": "First"}
+                                    ],
                                 }
                             ],
                         },
@@ -210,7 +215,9 @@ class TestConvertAdfToText:
                             "content": [
                                 {
                                     "type": "paragraph",
-                                    "content": [{"type": "text", "text": "Second"}],
+                                    "content": [
+                                        {"type": "text", "text": "Second"}
+                                    ],
                                 }
                             ],
                         },
@@ -345,7 +352,9 @@ class TestConvertAdfToText:
                     "content": [
                         {
                             "type": "paragraph",
-                            "content": [{"type": "text", "text": "Quoted text"}],
+                            "content": [
+                                {"type": "text", "text": "Quoted text"}
+                            ],
                         }
                     ],
                 }
@@ -387,7 +396,9 @@ class TestConvertAdfToText:
 class TestListTickets:
     """Tests for list_tickets function."""
 
-    def test_list_tickets_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_list_tickets_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test listing tickets successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="TEST-1\tTest ticket 1\tOpen\tHigh\tBug\tJohn Doe\nTEST-2\tTest ticket 2\tDone\tMedium\tStory\t",
@@ -467,7 +478,9 @@ class TestListTickets:
         assert "created" in call_args
         assert "--reverse" in call_args
 
-    def test_list_tickets_error(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_list_tickets_error(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test listing tickets with error."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -522,7 +535,9 @@ class TestGetTicket:
         assert "--comments" in call_args
         assert "10" in call_args
 
-    def test_get_ticket_not_found(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_get_ticket_not_found(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test getting nonexistent ticket."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -554,7 +569,9 @@ class TestGetTicket:
 class TestCreateTicket:
     """Tests for create_ticket function."""
 
-    def test_create_ticket_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_create_ticket_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test creating ticket successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout='{"key": "TEST-456", "self": "https://jira.example.com/rest/api/2/issue/12345"}',
@@ -599,7 +616,9 @@ class TestCreateTicket:
         assert "--label" in call_args
         assert "--component" in call_args
 
-    def test_create_ticket_failure(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_create_ticket_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test creating ticket with failure."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -620,7 +639,9 @@ class TestCreateTicket:
 class TestMoveTicket:
     """Tests for move_ticket function."""
 
-    def test_move_ticket_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_move_ticket_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test moving ticket successfully."""
         # First call: get current status.
         # Second call: move ticket.
@@ -675,7 +696,9 @@ class TestMoveTicket:
 class TestAddComment:
     """Tests for add_comment function."""
 
-    def test_add_comment_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_add_comment_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test adding comment successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -692,7 +715,9 @@ class TestAddComment:
         call_kwargs = mock_execute_jira_command.call_args[1]
         assert call_kwargs["stdin_input"] == "This is a comment"
 
-    def test_add_comment_failure(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_add_comment_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test adding comment with failure."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -709,10 +734,14 @@ class TestAddComment:
 class TestAssignToMe:
     """Tests for assign_to_me function."""
 
-    def test_assign_to_me_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_assign_to_me_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test assigning ticket to current user successfully."""
         mock_execute_jira_command.side_effect = [
-            CommandResult(stdout="john.doe@example.com", stderr="", exit_code=0),
+            CommandResult(
+                stdout="john.doe@example.com", stderr="", exit_code=0
+            ),
             CommandResult(stdout="", stderr="", exit_code=0),
         ]
 
@@ -756,7 +785,9 @@ class TestAssignToMe:
 class TestOpenTicketInBrowser:
     """Tests for open_ticket_in_browser function."""
 
-    def test_open_ticket_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_open_ticket_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test opening ticket in browser successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -769,7 +800,9 @@ class TestOpenTicketInBrowser:
         assert "Successfully opened" in result
         assert "TEST-123" in result
 
-    def test_open_ticket_failure(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_open_ticket_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test opening ticket with failure."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -824,7 +857,9 @@ class TestUpdateTicketDescription:
 class TestListSprints:
     """Tests for list_sprints function."""
 
-    def test_list_sprints_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_list_sprints_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test listing sprints successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14\n456\tSprint 2\tfuture\t2024-01-15\t2024-01-28",
@@ -904,7 +939,9 @@ class TestListSprints:
 
         assert result.sprints == []
 
-    def test_list_sprints_error(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_list_sprints_error(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test listing sprints with error."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -940,7 +977,9 @@ class TestListSprints:
 class TestAddToSprint:
     """Tests for add_to_sprint function."""
 
-    def test_add_to_sprint_success(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_add_to_sprint_success(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test adding ticket to sprint successfully."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -973,7 +1012,9 @@ class TestAddToSprint:
         assert "789" in call_args
         assert "TEST-123" in call_args
 
-    def test_add_to_sprint_failure(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_add_to_sprint_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test adding ticket to sprint with failure."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1045,7 +1086,9 @@ class TestRemoveFromSprint:
 class TestEditTicket:
     """Tests for edit_ticket function."""
 
-    def test_edit_ticket_summary(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_summary(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket summary."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1063,7 +1106,9 @@ class TestEditTicket:
         assert "--summary" in call_args
         assert "New summary" in call_args
 
-    def test_edit_ticket_priority(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_priority(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket priority."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1080,7 +1125,9 @@ class TestEditTicket:
         assert "--priority" in call_args
         assert "High" in call_args
 
-    def test_edit_ticket_assignee(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_assignee(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket assignee."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1097,7 +1144,9 @@ class TestEditTicket:
         assert "--assignee" in call_args
         assert "john.doe" in call_args
 
-    def test_edit_ticket_unassign(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_unassign(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test unassigning ticket."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1114,7 +1163,9 @@ class TestEditTicket:
         assert "--assignee" in call_args
         assert "x" in call_args
 
-    def test_edit_ticket_labels(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_labels(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket labels."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1131,7 +1182,9 @@ class TestEditTicket:
         label_count = call_args.count("--label")
         assert label_count == 2
 
-    def test_edit_ticket_add_labels(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_add_labels(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test adding labels to ticket."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1167,7 +1220,9 @@ class TestEditTicket:
         assert "--label" in call_args
         assert "-old-label" in call_args
 
-    def test_edit_ticket_components(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_components(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket components."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1203,7 +1258,9 @@ class TestEditTicket:
         version_count = call_args.count("--fix-version")
         assert version_count == 2
 
-    def test_edit_ticket_parent(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_parent(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket parent."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",
@@ -1280,7 +1337,9 @@ class TestEditTicket:
         # Verify command was not called.
         mock_execute_jira_command.assert_not_called()
 
-    def test_edit_ticket_failure(self, mock_execute_jira_command: MagicMock) -> None:
+    def test_edit_ticket_failure(
+        self, mock_execute_jira_command: MagicMock
+    ) -> None:
         """Test editing ticket with failure."""
         mock_execute_jira_command.return_value = CommandResult(
             stdout="",

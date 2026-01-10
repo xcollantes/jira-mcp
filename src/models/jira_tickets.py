@@ -51,7 +51,9 @@ class JiraComment(BaseModel):
     """Jira comment."""
 
     author: str = Field(description="Display name of the comment author.")
-    created: str = Field(description="ISO timestamp when the comment was created.")
+    created: str = Field(
+        description="ISO timestamp when the comment was created."
+    )
     body: str = Field(description="Comment body text.")
 
 
@@ -64,17 +66,33 @@ class JiraTicket(BaseModel):
 
     key: str = Field(description="Jira ticket key (e.g., PROJ-123).")
     summary: str = Field(description="Ticket summary/title.")
-    status: str = Field(description="Current status (e.g., Open, In Progress, Done).")
-    priority: str = Field(description="Priority level (e.g., High, Medium, Low).")
+    status: str = Field(
+        description="Current status (e.g., Open, In Progress, Done)."
+    )
+    priority: str = Field(
+        description="Priority level (e.g., High, Medium, Low)."
+    )
     type: str = Field(description="Issue type (e.g., Bug, Story, Task, Epic).")
-    assignee: str | None = Field(default=None, description="Assignee display name.")
-    reporter: str | None = Field(default=None, description="Reporter display name.")
-    created: str | None = Field(default=None, description="ISO timestamp when created.")
-    updated: str | None = Field(default=None, description="ISO timestamp when last updated.")
-    description: str | None = Field(default=None, description="Ticket description.")
+    assignee: str | None = Field(
+        default=None, description="Assignee display name."
+    )
+    reporter: str | None = Field(
+        default=None, description="Reporter display name."
+    )
+    created: str | None = Field(
+        default=None, description="ISO timestamp when created."
+    )
+    updated: str | None = Field(
+        default=None, description="ISO timestamp when last updated."
+    )
+    description: str | None = Field(
+        default=None, description="Ticket description."
+    )
 
 
 class JiraTicketDetail(JiraTicket):
     """Detailed Jira ticket with comments."""
 
-    comments: list[JiraComment] = Field(default_factory=list, description="List of comments.")
+    comments: list[JiraComment] = Field(
+        default_factory=list, description="List of comments."
+    )

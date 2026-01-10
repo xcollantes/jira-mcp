@@ -1,10 +1,10 @@
 """Tests for jira_executor module."""
 
 import json
-import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from src.tools.jira_executor import (
     CommandResult,
     execute_jira_command,
@@ -96,7 +96,9 @@ class TestExecuteJiraCommand:
         assert result.exit_code == 1
         assert result.stderr == "error message"
 
-    def test_command_with_stdin_input(self, mock_subprocess_run: MagicMock) -> None:
+    def test_command_with_stdin_input(
+        self, mock_subprocess_run: MagicMock
+    ) -> None:
         """Test executing command with stdin input."""
         mock_subprocess_run.return_value = MagicMock(
             stdout="created",
@@ -137,7 +139,9 @@ class TestExecuteJiraCommand:
         call_kwargs = mock_subprocess_run.call_args[1]
         assert call_kwargs["timeout"] == 20
 
-    def test_command_uses_environment(self, mock_subprocess_run: MagicMock) -> None:
+    def test_command_uses_environment(
+        self, mock_subprocess_run: MagicMock
+    ) -> None:
         """Test that command uses current environment."""
         mock_subprocess_run.return_value = MagicMock(
             stdout="ok",
@@ -156,7 +160,9 @@ class TestExecuteJiraCommand:
 class TestExecuteJiraCommandJson:
     """Tests for execute_jira_command_json function."""
 
-    def test_successful_json_command(self, mock_subprocess_run: MagicMock) -> None:
+    def test_successful_json_command(
+        self, mock_subprocess_run: MagicMock
+    ) -> None:
         """Test executing a command that returns valid JSON."""
         json_response = {"key": "TEST-123", "summary": "Test ticket"}
         mock_subprocess_run.return_value = MagicMock(
@@ -170,7 +176,9 @@ class TestExecuteJiraCommandJson:
         assert result == json_response
         assert result["key"] == "TEST-123"
 
-    def test_failed_command_raises_error(self, mock_subprocess_run: MagicMock) -> None:
+    def test_failed_command_raises_error(
+        self, mock_subprocess_run: MagicMock
+    ) -> None:
         """Test that failed command raises ValueError."""
         mock_subprocess_run.return_value = MagicMock(
             stdout="",
@@ -183,7 +191,9 @@ class TestExecuteJiraCommandJson:
 
         assert "jira command failed" in str(exc_info.value)
 
-    def test_invalid_json_raises_error(self, mock_subprocess_run: MagicMock) -> None:
+    def test_invalid_json_raises_error(
+        self, mock_subprocess_run: MagicMock
+    ) -> None:
         """Test that invalid JSON raises ValueError."""
         mock_subprocess_run.return_value = MagicMock(
             stdout="not valid json",

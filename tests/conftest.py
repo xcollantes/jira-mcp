@@ -1,10 +1,10 @@
 """Shared pytest fixtures for jira-mcp tests."""
 
-import json
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
+
 from src.models.jira_actions import (
     AddCommentResult,
     AddToSprintResult,
@@ -106,7 +106,9 @@ def sample_raw_ticket_json() -> dict[str, Any]:
                 "content": [
                     {
                         "type": "paragraph",
-                        "content": [{"type": "text", "text": "Test description"}],
+                        "content": [
+                            {"type": "text", "text": "Test description"}
+                        ],
                     }
                 ],
             },

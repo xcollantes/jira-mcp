@@ -1,3 +1,5 @@
+"""Models for Jira objects."""
+
 from pydantic import BaseModel
 
 

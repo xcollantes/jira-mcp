@@ -1,6 +1,5 @@
 """Tests for jira_actions module."""
 
-import pytest
 from src.models.jira_actions import (
     AddCommentResult,
     AssignToMeResult,

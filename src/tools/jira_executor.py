@@ -84,7 +84,6 @@ def execute_jira_command_json(args: list[str]) -> Any:
         JiraCliError: If command fails.
         ValueError: If JSON parsing fails.
     """
-
     result: CommandResult = execute_jira_command(args)
 
     if result.exit_code != 0:
@@ -93,4 +92,6 @@ def execute_jira_command_json(args: list[str]) -> Any:
     try:
         return json.loads(result.stdout)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to parse jira output as JSON: {result.stdout}") from e
+        raise ValueError(
+            f"Failed to parse jira output as JSON: {result.stdout}"
+        ) from e

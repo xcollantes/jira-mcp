@@ -65,14 +65,20 @@ def list_tickets_tool(
         str | None,
         "Raw JQL query (advanced users only). Overrides other filters if provided.",
     ] = None,
-    limit: Annotated[int, "Maximum number of tickets to return (default 20)."] = 20,
-    assigned_to_me: Annotated[bool | None, "Show only tickets assigned to me."] = None,
+    limit: Annotated[
+        int, "Maximum number of tickets to return (default 20)."
+    ] = 20,
+    assigned_to_me: Annotated[
+        bool | None, "Show only tickets assigned to me."
+    ] = None,
     unassigned: Annotated[bool | None, "Show only unassigned tickets."] = None,
     status: Annotated[
         str | None,
         "Filter by status. Common values: Open, In Progress, Done, Closed. Your Jira may have custom statuses.",
     ] = None,
-    project: Annotated[str | None, "Filter by project key (e.g., 'PROJ')."] = None,
+    project: Annotated[
+        str | None, "Filter by project key (e.g., 'PROJ')."
+    ] = None,
     created_recently: Annotated[
         bool | None, "Show tickets created in the last 7 days."
     ] = None,
@@ -82,7 +88,9 @@ def list_tickets_tool(
     order_by: Annotated[
         str | None, "Sort tickets by field (created, updated, priority)."
     ] = None,
-    order_direction: Annotated[str | None, "Sort direction (asc, desc)."] = None,
+    order_direction: Annotated[
+        str | None, "Sort direction (asc, desc)."
+    ] = None,
 ) -> str:
     """Search and list Jira tickets with filters."""
     try:
@@ -132,7 +140,8 @@ def get_ticket_tool(
         comments_text = "No comments"
         if ticket.comments:
             comments_text = "\n\n".join(
-                f"- **{c.author}** ({c.created}):\n  {c.body}" for c in ticket.comments
+                f"- **{c.author}** ({c.created}):\n  {c.body}"
+                for c in ticket.comments
             )
 
         return textwrap.dedent(
@@ -171,10 +180,14 @@ def create_ticket_tool(
     description: Annotated[
         str | None, "Issue description (markdown supported)."
     ] = None,
-    priority: Annotated[str | None, "Priority level (e.g., High, Medium, Low)."] = None,
+    priority: Annotated[
+        str | None, "Priority level (e.g., High, Medium, Low)."
+    ] = None,
     assignee: Annotated[str | None, "Assignee username or email."] = None,
     labels: Annotated[list[str] | None, "List of labels to add."] = None,
-    components: Annotated[list[str] | None, "List of components to add."] = None,
+    components: Annotated[
+        list[str] | None, "List of components to add."
+    ] = None,
 ) -> str:
     """Create a new Jira ticket."""
     try:
@@ -192,9 +205,7 @@ def create_ticket_tool(
         if not result.success:
             return f"Failed to create ticket: {result.error}"
 
-        return (
-            f"Successfully created ticket {result.ticket_key}\nURL: {result.ticket_url}"
-        )
+        return f"Successfully created ticket {result.ticket_key}\nURL: {result.ticket_url}"
 
     except Exception as e:
         logger.error("Error creating ticket: %s", e)
@@ -307,7 +318,9 @@ def list_sprints_tool(
         str | None,
         "Filter sprints by state (active, future, closed).",
     ] = None,
-    limit: Annotated[int, "Maximum number of sprints to return (default 20)."] = 20,
+    limit: Annotated[
+        int, "Maximum number of sprints to return (default 20)."
+    ] = 20,
 ) -> str:
     """List sprints from a Jira board."""
     try:
@@ -349,7 +362,9 @@ def add_to_sprint_tool(
         return result.message
 
     except Exception as e:
-        logger.error("Error adding %s to sprint %d: %s", ticket_key, sprint_id, e)
+        logger.error(
+            "Error adding %s to sprint %d: %s", ticket_key, sprint_id, e
+        )
         return f"Error adding {ticket_key} to sprint: {e}"
 
 
@@ -387,13 +402,18 @@ def edit_ticket_tool(
         "New assignee username or email (use empty string to unassign).",
     ] = None,
     labels: Annotated[
-        list[str] | None, "Labels to set on the ticket (replaces existing labels)."
+        list[str] | None,
+        "Labels to set on the ticket (replaces existing labels).",
     ] = None,
-    add_labels: Annotated[list[str] | None, "Labels to add to the ticket."] = None,
+    add_labels: Annotated[
+        list[str] | None, "Labels to add to the ticket."
+    ] = None,
     remove_labels: Annotated[
         list[str] | None, "Labels to remove from the ticket."
     ] = None,
-    components: Annotated[list[str] | None, "Components to set on the ticket."] = None,
+    components: Annotated[
+        list[str] | None, "Components to set on the ticket."
+    ] = None,
     fix_versions: Annotated[
         list[str] | None, "Fix versions to set on the ticket."
     ] = None,
@@ -431,7 +451,9 @@ def main() -> None:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Jira MCP Server: Provides Jira tools for LLM clients via jira-cli."
     )
-    parser.add_argument("--debug", action="store_true", help="Enable debug logging.")
+    parser.add_argument(
+        "--debug", action="store_true", help="Enable debug logging."
+    )
 
     args: argparse.Namespace = parser.parse_args()
 

@@ -247,7 +247,9 @@ def _convert_adf_to_text(adf: AdfDocument) -> str:
                     if p.get("type") == "paragraph" and p.get("content"):
                         item_parts.append(process_inline_content(p["content"]))
                 if item_parts:
-                    list_items.append(f"{start_num + idx}. {' '.join(item_parts)}")
+                    list_items.append(
+                        f"{start_num + idx}. {' '.join(item_parts)}"
+                    )
             if list_items:
                 parts.append("\n".join(list_items))
 
@@ -266,7 +268,9 @@ def _convert_adf_to_text(adf: AdfDocument) -> str:
             quoted_lines: list[str] = []
             for p in block.get("content", []):
                 if p.get("type") == "paragraph" and p.get("content"):
-                    quoted_lines.append(f"> {process_inline_content(p['content'])}")
+                    quoted_lines.append(
+                        f"> {process_inline_content(p['content'])}"
+                    )
             if quoted_lines:
                 parts.append("\n".join(quoted_lines))
 
@@ -296,7 +300,9 @@ def get_ticket(ticket_key: str, comments: int = 5) -> JiraTicketDetail:
     try:
         raw_data: dict[str, Any] = json.loads(result.stdout)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to parse jira response: {result.stdout}") from e
+        raise ValueError(
+            f"Failed to parse jira response: {result.stdout}"
+        ) from e
     except Exception:
         raise ValueError(f"Failed to get ticket {ticket_key}: {result.stdout}")
 
@@ -409,7 +415,9 @@ def create_ticket(
         stdin_input = description
 
     try:
-        result: CommandResult = execute_jira_command(args, stdin_input=stdin_input)
+        result: CommandResult = execute_jira_command(
+            args, stdin_input=stdin_input
+        )
 
         if result.exit_code != 0:
             return CreateTicketResult(
@@ -467,7 +475,9 @@ def move_ticket(ticket_key: str, status: str) -> MoveTicketResult:
 
     # Parse the output.
     output_parts: list[str] = view_result.stdout.strip().split("\t")
-    current_status = output_parts[1] if len(output_parts) > 1 else output_parts[0]
+    current_status = (
+        output_parts[1] if len(output_parts) > 1 else output_parts[0]
+    )
     current_status = current_status.strip() if current_status else "Unknown"
 
     # Move the ticket.
@@ -481,7 +491,9 @@ def move_ticket(ticket_key: str, status: str) -> MoveTicketResult:
     )
 
     if move_result.exit_code != 0:
-        raise ValueError(f"Failed to move ticket {ticket_key}: {move_result.stderr}")
+        raise ValueError(
+            f"Failed to move ticket {ticket_key}: {move_result.stderr}"
+        )
 
     return MoveTicketResult(
         success=True,
@@ -506,7 +518,9 @@ def add_comment(ticket_key: str, comment: str) -> AddCommentResult:
     result: CommandResult = execute_jira_command(args, stdin_input=comment)
 
     if result.exit_code != 0:
-        raise ValueError(f"Failed to add comment to {ticket_key}: {result.stderr}")
+        raise ValueError(
+            f"Failed to add comment to {ticket_key}: {result.stderr}"
+        )
 
     return AddCommentResult(
         success=True,
@@ -591,7 +605,9 @@ def update_ticket_description(
     result: CommandResult = execute_jira_command(args, stdin_input=description)
 
     if result.exit_code != 0:
-        raise ValueError(f"Failed to update ticket {ticket_key}: {result.stderr}")
+        raise ValueError(
+            f"Failed to update ticket {ticket_key}: {result.stderr}"
+        )
 
     return UpdateDescriptionResult(
         success=True,
@@ -636,7 +652,10 @@ def list_sprints(
 
     if result.exit_code != 0:
         # Check if it's just "no sprints found" which is not an error.
-        if "No result found" in result.stderr or "no sprints" in result.stderr.lower():
+        if (
+            "No result found" in result.stderr
+            or "no sprints" in result.stderr.lower()
+        ):
             return ListSprintsResult(sprints=[])
         raise ValueError(f"Failed to list sprints: {result.stderr}")
 
@@ -698,12 +717,21 @@ def remove_from_sprint(ticket_key: str) -> RemoveFromSprintResult:
         RemoveFromSprintResult with success status.
     """
     # To remove from sprint, we edit the issue and set sprint to empty.
-    args: list[str] = ["issue", "edit", ticket_key, "--custom", "sprint=", "--no-input"]
+    args: list[str] = [
+        "issue",
+        "edit",
+        ticket_key,
+        "--custom",
+        "sprint=",
+        "--no-input",
+    ]
 
     result: CommandResult = execute_jira_command(args)
 
     if result.exit_code != 0:
-        raise ValueError(f"Failed to remove {ticket_key} from sprint: {result.stderr}")
+        raise ValueError(
+            f"Failed to remove {ticket_key} from sprint: {result.stderr}"
+        )
 
     return RemoveFromSprintResult(
         success=True,
