@@ -22,8 +22,11 @@ jobs:
             artifact_name: jira-mcp-windows.exe
             asset_name: jira-mcp-windows.exe
           - os: macos-latest
-            artifact_name: jira-mcp-macos
-            asset_name: jira-mcp-macos
+            artifact_name: jira-mcp-macos-arm64-apple-silicon
+            asset_name: jira-mcp-macos-arm64-apple-silicon
+          - os: macos-13
+            artifact_name: jira-mcp-macos-x64
+            asset_name: jira-mcp-macos-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -71,5 +74,6 @@ jobs:
           files: |
             artifacts/jira-mcp-linux/jira-mcp-linux
             artifacts/jira-mcp-windows.exe/jira-mcp-windows.exe
-            artifacts/jira-mcp-macos/jira-mcp-macos
+            artifacts/jira-mcp-macos-arm64/jira-mcp-macos-arm64-apple-silicon
+            artifacts/jira-mcp-macos-x64/jira-mcp-macos-x64
           generate_release_notes: true
