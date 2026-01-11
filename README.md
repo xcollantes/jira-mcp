@@ -53,7 +53,99 @@ jira issue list
 
 This should return a list of issues in Jira.
 
-### MCP Server: Option 1: Development setup with uv
+### MCP Server: Option 1: Download binaries
+
+Download the latest release for your operating system from the [Releases
+page](https://github.com/xcollantes/jira-mcp/releases).
+
+| Operating System | Binary |
+|------------------|--------|
+| Linux | `jira-mcp-linux` |
+| Windows | `jira-mcp-windows.exe` |
+| macOS (Apple Silicon M1/M2/M3) | `jira-mcp-macos-arm64-apple-silicon` |
+| macOS (Intel) | `jira-mcp-macos-x64` |
+
+#### Linux
+
+```bash
+# Download the binary
+curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-linux
+
+# Make it executable
+chmod +x jira-mcp
+
+# Move to a directory in your PATH (optional)
+sudo mv jira-mcp /usr/local/bin/
+```
+
+Add to your LLM client configuration:
+
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "/usr/local/bin/jira-mcp"
+    }
+  }
+}
+```
+
+#### macOS
+
+```bash
+# For Apple Silicon (M1/M2/M3)
+curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-macos-arm64-apple-silicon
+
+# For Intel Macs
+curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-macos-x64
+
+# Make it executable
+chmod +x jira-mcp
+
+# Move to a directory in your PATH (optional)
+sudo mv jira-mcp /usr/local/bin/
+```
+
+**Note:** macOS may block the binary on first run. If you see a security
+warning, go to **System Settings > Privacy & Security** and click **Allow
+Anyway**, or run:
+
+```bash
+xattr -d com.apple.quarantine /usr/local/bin/jira-mcp
+```
+
+Add to your LLM client configuration:
+
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "/usr/local/bin/jira-mcp"
+    }
+  }
+}
+```
+
+#### Windows
+
+1. Download `jira-mcp-windows.exe` from the [Releases
+   page](https://github.com/xcollantes/jira-mcp/releases).
+2. Move the executable to a convenient location (e.g., `C:\Program
+   Files\jira-mcp\`).
+
+Add to your LLM client configuration:
+
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "C:\\Program Files\\jira-mcp\\jira-mcp-windows.exe"
+    }
+  }
+}
+```
+
+### MCP Server: Option 2: Development setup with uv
 
 Get repo:
 
@@ -80,11 +172,12 @@ Usually the JSON file for the LLM client will look like this:
 ```
 
 This will tell your LLM client application that there's a tool that can be
-called by calling `uv --directory /ABSOLUTE/PATH/TO/REPO run python -m src.main`.
+called by calling `uv --directory /ABSOLUTE/PATH/TO/REPO run python -m
+src.main`.
 
 Install UV: <https://docs.astral.sh/uv/getting-started/installation/>
 
-### MCP Server: Option 2: Install globally with pipx
+### MCP Server: Option 3: Install globally with pipx
 
 ```bash
 # Install pipx if you haven't already
@@ -103,8 +196,8 @@ pipx install -e .
    Desktop, Cursor, Windsurf, or ChatGPT.
 2. The client sends your question to the LLM model (Sonnet, Grok, ChatGPT)
 3. LLM analyzes the available tools and decides which one(s) to use
-   - The LLM you're using will have a context of the tools and what each tool
-     is meant for in human language.
+   - The LLM you're using will have a context of the tools and what each tool is
+     meant for in human language.
    - Alternatively without MCPs, you could include in the prompt the endpoints
      and a description on each endpoint for the LLM to "call on". Then you could
      copy and paste the text commands into the terminal on your machine.
