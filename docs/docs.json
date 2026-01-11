@@ -19,7 +19,9 @@
               "index",
               "quickstart",
               "development",
-              "contributing"
+              "contributing",
+              "report-bug",
+              "feature-request"
             ]
           },
           {
