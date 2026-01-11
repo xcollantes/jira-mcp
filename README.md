@@ -1,4 +1,4 @@
-![Jira MCP](/images/jiramcp.png)
+![Jira MCP](/docs/images/jiramcp.png)
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange.svg)](https://modelcontextprotocol.io/)
