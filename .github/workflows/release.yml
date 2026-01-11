@@ -22,9 +22,9 @@ jobs:
           - os: macos-latest
             artifact_name: jira-mcp-macos-apple-silicon-arm64
             asset_name: jira-mcp-macos-apple-silicon-arm64
-          - os: macos-12
-            artifact_name: jira-mcp-macos-x64
-            asset_name: jira-mcp-macos-x64
+          # - os: macos-12
+          #   artifact_name: jira-mcp-macos-x64
+          #   asset_name: jira-mcp-macos-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -73,5 +73,4 @@ jobs:
             artifacts/jira-mcp-linux/jira-mcp-linux
             artifacts/jira-mcp-windows.exe/jira-mcp-windows.exe
             artifacts/jira-mcp-macos-apple-silicon-arm64/jira-mcp-macos-apple-silicon-arm64
-            artifacts/jira-mcp-macos-x64/jira-mcp-macos-x64
           generate_release_notes: true
