@@ -62,7 +62,7 @@ page](https://github.com/xcollantes/jira-mcp/releases).
 |------------------|--------|
 | Linux | `jira-mcp-linux` |
 | Windows | `jira-mcp-windows.exe` |
-| macOS (Apple Silicon M1/M2/M3) | `jira-mcp-macos-arm64-apple-silicon` |
+| macOS (Apple Silicon) | `jira-mcp-macos-apple-silicon-arm64` |
 | macOS (Intel) | `jira-mcp-macos-x64` |
 
 #### Linux
@@ -94,7 +94,7 @@ Add to your LLM client configuration:
 
 ```bash
 # For Apple Silicon (M1/M2/M3)
-curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-macos-arm64-apple-silicon
+curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-macos-apple-silicon-arm64
 
 # For Intel Macs
 curl -L -o jira-mcp https://github.com/xcollantes/jira-mcp/releases/latest/download/jira-mcp-macos-x64
