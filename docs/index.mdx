@@ -1,97 +1,62 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Jira MCP"
+description: "Control Jira through AI-powered LLM clients using the Model Context Protocol"
 ---
 
-## Setting up
+Jira MCP is a Model Context Protocol server that allows AI assistants to interact with your Jira instance. Ask questions about tickets, create issues, manage sprints, and more through natural language.
 
-Get your documentation site up and running in minutes.
+## How it works
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
+<Steps>
+<Step title="Prompt your AI assistant">
+  You enter questions or prompts to an LLM client such as Claude Desktop, Cursor, Windsurf, or ChatGPT.
+</Step>
+
+<Step title="LLM analyzes available tools">
+  The LLM analyzes the available MCP tools and decides which one(s) to use. The
+  LLM has context of each tool and what it is meant for in human language.
+</Step>
+
+<Step title="MCP server executes commands">
+  The client executes the chosen tool(s) through the MCP server. The MCP server
+  runs locally on your machine or remotely via an endpoint.
+</Step>
+
+<Step title="Results returned to LLM">
+  The results are sent back to the LLM, which formulates a natural language response and displays data or performs actions using the MCP server.
+</Step>
+</Steps>
+
+## Get started
+
+<Card title="Quickstart" icon="rocket" href="/quickstart" horizontal>
+  Install and configure Jira MCP in minutes.
 </Card>
 
-## Make it yours
+## Configure your AI tool
 
-Design a docs site that looks great and empowers your users.
+Set up Jira MCP with your preferred AI assistant.
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={3}>
+  <Card title="Cursor" icon="arrow-pointer" href="/ai-tools/cursor">
+    Configure Cursor IDE with Jira MCP.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Claude Code" icon="asterisk" href="/ai-tools/claude-code">
+    Set up Claude Code CLI with Jira MCP.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Windsurf" icon="water" href="/ai-tools/windsurf">
+    Configure Windsurf with Jira MCP.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Architecture
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
+MCP follows a client-server architecture where an **MCP host** (an AI application like Cursor or Claude Desktop) establishes connections to one or more **MCP servers**. The **MCP host** accomplishes this by creating one **MCP client** for each **MCP server**. Each MCP client maintains a dedicated connection with its corresponding MCP server.
 
 <Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
+  title="Learn more about MCP architecture"
+  icon="diagram-project"
+  href="https://modelcontextprotocol.io/docs/learn/architecture"
 >
-  Browse our showcase of exceptional documentation sites.
+  Read the official MCP documentation for details on architecture.
 </Card>

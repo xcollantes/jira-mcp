@@ -1,96 +1,109 @@
 ---
-title: "Windsurf setup"
-description: "Configure Windsurf for your documentation workflow"
+title: "Windsurf"
+description: "Configure Windsurf to use Jira MCP"
 icon: "water"
 ---
 
-Configure Windsurf's Cascade AI assistant to help you write and maintain documentation. This guide shows how to set up Windsurf specifically for your Mintlify documentation workflow.
+Set up Jira MCP in Windsurf to manage Jira tickets directly from your IDE using natural language with Cascade AI.
 
 ## Prerequisites
 
 - Windsurf editor installed
-- Access to your documentation repository
+- Jira MCP installed (see [Quickstart](/quickstart))
+- jira-cli configured and authenticated
 
-## Workspace rules
+## Configuration
 
-Create workspace rules that provide Windsurf with context about your documentation project and standards.
+<Steps>
+<Step title="Open MCP settings">
 
-Create `.windsurf/rules.md` in your project root:
+In Windsurf, go to **Settings > MCP** or open the command palette and search for "MCP".
 
-````markdown
-# Mintlify technical writing rule
+</Step>
 
-## Project context
+<Step title="Add Jira MCP server">
 
-- This is a documentation project on the Mintlify platform
-- We use MDX files with YAML frontmatter  
-- Navigation is configured in `docs.json`
-- We follow technical writing best practices
+Add the following configuration to your MCP servers:
 
-## Writing standards
+<Tabs>
+<Tab title="Binary installation">
 
-- Use second person ("you") for instructions
-- Write in active voice and present tense
-- Start procedures with prerequisites
-- Include expected outcomes for major steps
-- Use descriptive, keyword-rich headings
-- Keep sentences concise but informative
-
-## Required page structure
-
-Every page must start with frontmatter:
-
-```yaml
----
-title: "Clear, specific title"
-description: "Concise description for SEO and navigation"
----
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "/usr/local/bin/jira-mcp"
+    }
+  }
+}
 ```
 
-## Mintlify components
+<Note>
+Replace `/usr/local/bin/jira-mcp` with the actual path to your jira-mcp binary.
+</Note>
 
-### Callouts
+</Tab>
 
-- `<Note>` for helpful supplementary information
-- `<Warning>` for important cautions and breaking changes
-- `<Tip>` for best practices and expert advice  
-- `<Info>` for neutral contextual information
-- `<Check>` for success confirmations
+<Tab title="Development setup (uv)">
 
-### Code examples
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "uv",
+      "args": ["--directory", "/ABSOLUTE/PATH/TO/jira-mcp", "run", "python", "-m", "src.main"]
+    }
+  }
+}
+```
 
-- When appropriate, include complete, runnable examples
-- Use `<CodeGroup>` for multiple language examples
-- Specify language tags on all code blocks
-- Include realistic data, not placeholders
-- Use `<RequestExample>` and `<ResponseExample>` for API docs
+<Note>
+Replace `/ABSOLUTE/PATH/TO/jira-mcp` with the actual path to your cloned repository.
+</Note>
 
-### Procedures
+</Tab>
+</Tabs>
 
-- Use `<Steps>` component for sequential instructions
-- Include verification steps with `<Check>` components when relevant
-- Break complex procedures into smaller steps
+</Step>
 
-### Content organization
+<Step title="Restart Windsurf">
 
-- Use `<Tabs>` for platform-specific content
-- Use `<Accordion>` for progressive disclosure
-- Use `<Card>` and `<CardGroup>` for highlighting content
-- Wrap images in `<Frame>` components with descriptive alt text
+Restart Windsurf or reload the window to apply the changes.
 
-## API documentation requirements
+</Step>
+</Steps>
 
-- Document all parameters with `<ParamField>` 
-- Show response structure with `<ResponseField>`
-- Include both success and error examples
-- Use `<Expandable>` for nested object properties
-- Always include authentication examples
+## Usage examples
 
-## Quality standards
+Once configured, you can interact with Jira using natural language in Windsurf's Cascade AI:
 
-- Test all code examples before publishing
-- Use relative paths for internal links
-- Include alt text for all images
-- Ensure proper heading hierarchy (start with h2)
-- Check existing patterns for consistency
-````
+- "Show me my assigned tickets"
+- "Create a bug ticket for the login page issue"
+- "Move PROJ-123 to In Progress"
+- "Add a comment to PROJ-456 explaining the fix"
+- "What tickets are in the current sprint?"
+
+## Troubleshooting
+
+<AccordionGroup>
+<Accordion title="MCP server not connecting">
+
+1. Verify the path to your jira-mcp binary is correct.
+2. Make sure jira-cli is properly configured by running `jira issue list` in your terminal.
+3. Check Windsurf's MCP logs for error messages.
+
+</Accordion>
+
+<Accordion title="Authentication errors">
+
+Ensure your Jira credentials are set in your shell environment:
+
+```bash
+export JIRA_API_KEY="your-api-key"
+export JIRA_AUTH_TYPE="basic"
+```
+
+Then restart Windsurf to pick up the environment variables.
+
+</Accordion>
+</AccordionGroup>
