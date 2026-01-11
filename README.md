@@ -229,6 +229,26 @@ pipx install -e .
 Do not use `print` statements for logging. Use the logging module instead.
 Writing to stdout will corrupt the JSON-RPC messages and break your server.
 
+### Pre-commit
+
+This project uses [pre-commit](https://pre-commit.com/) to run
+[ruff](https://docs.astral.sh/ruff/) linting and formatting checks, and
+[pytest](https://docs.pytest.org/) tests before each commit.
+
+To set up pre-commit hooks:
+
+```bash
+uv sync
+uv run pre-commit install
+```
+
+Once installed, ruff and pytest will automatically run when you commit. To run
+checks manually on all files:
+
+```bash
+uv run pre-commit run --all-files
+```
+
 ## Docstrings / Tool decorator parameters
 
 MCP.tools decorator parameters are especially important as this is the human
