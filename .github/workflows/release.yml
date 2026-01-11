@@ -74,6 +74,6 @@ jobs:
           files: |
             artifacts/jira-mcp-linux/jira-mcp-linux
             artifacts/jira-mcp-windows.exe/jira-mcp-windows.exe
-            artifacts/jira-mcp-macos-arm64/jira-mcp-macos-arm64-apple-silicon
+            artifacts/jira-mcp-macos-arm64-apple-silicon/jira-mcp-macos-arm64-apple-silicon
             artifacts/jira-mcp-macos-x64/jira-mcp-macos-x64
           generate_release_notes: true
