@@ -18,10 +18,7 @@
             "pages": [
               "index",
               "quickstart",
-              "development",
-              "contributing",
-              "report-bug",
-              "feature-request"
+              "development"
             ]
           },
           {
@@ -30,6 +27,39 @@
               "ai-tools/cursor",
               "ai-tools/claude-code",
               "ai-tools/windsurf"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Bug Report",
+        "groups": [
+          {
+            "group": "Reporting Issues",
+            "pages": [
+              "report-bug"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Feature Request",
+        "groups": [
+          {
+            "group": "Requesting Features",
+            "pages": [
+              "feature-request"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Contributing",
+        "groups": [
+          {
+            "group": "How to Contribute",
+            "pages": [
+              "contributing"
             ]
           }
         ]
