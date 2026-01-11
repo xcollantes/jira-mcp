@@ -41,6 +41,7 @@ pythonpath = ["."]
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.0.0",
     "ruff>=0.14.11",
 ]
 
