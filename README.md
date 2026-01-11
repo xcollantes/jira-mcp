@@ -1,7 +1,13 @@
 ![Jira MCP](/docs/images/jiramcp.png)
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange.svg)](https://modelcontextprotocol.io/)
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange.svg?style=for-the-badge&logo=modelcontextprotocol&logoColor=white)](https://modelcontextprotocol.io/)
+[![pytest](https://img.shields.io/badge/pytest-000000.svg?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org/)
+[![ruff](https://img.shields.io/badge/ruff-d7ff64.svg?style=for-the-badge&logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
+[![uv](https://img.shields.io/badge/uv-000000.svg?style=for-the-badge&logo=uv&logoColor=white)](https://docs.astral.sh/uv/)
+[![CI](https://img.shields.io/github/actions/workflow/status/xcollantes/jira-mcp/ci.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/xcollantes/jira-mcp/actions)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/Version-0.1.0-blue.svg?style=for-the-badge&logo=semver&logoColor=white)](https://github.com/xcollantes/jira-mcp/releases)
 
 Jira MCP for controlling Jira through Jira Command Line.
 
@@ -182,7 +188,14 @@ Usually the JSON file for the LLM client will look like this:
   "mcpServers": {
     "jira": {
       "command": "uv",
-      "args": ["--directory", "/ABSOLUTE/PATH/TO/REPO/ROOT", "run", "python", "-m", "src.main"]
+      "args": [
+        "--directory",
+        "/ABSOLUTE/PATH/TO/REPO/ROOT",
+        "run",
+        "python",
+        "-m",
+        "src.main"
+      ]
     }
   }
 }
