@@ -53,7 +53,7 @@ jira issue list
 
 This should return a list of issues in Jira.
 
-### MCP Server: Option 1: Download binaries
+### MCP Server: Option 1: Download binaries (Recommended)
 
 Download the latest release for your operating system from the [Releases
 page](https://github.com/xcollantes/jira-mcp/releases).
@@ -79,6 +79,9 @@ sudo mv jira-mcp /usr/local/bin/
 ```
 
 Add to your LLM client configuration:
+
+**NOTE:** Make sure to replace `/usr/local/bin/jira-mcp` with the path to the
+binary on your machine if you moved it to a different location.
 
 ```json
 {
@@ -116,6 +119,9 @@ xattr -d com.apple.quarantine /usr/local/bin/jira-mcp
 
 Add to your LLM client configuration:
 
+**NOTE:** Make sure to replace `/usr/local/bin/jira-mcp` with the path to the
+binary on your machine if you moved it to a different location.
+
 ```json
 {
   "mcpServers": {
@@ -144,6 +150,10 @@ Add to your LLM client configuration:
   }
 }
 ```
+
+**NOTE:** Make sure to replace `C:\\Program
+Files\\jira-mcp\\jira-mcp-windows.exe` with the path to the binary on your
+machine if you moved it to a different location.
 
 ### MCP Server: Option 2: Development setup with uv
 
