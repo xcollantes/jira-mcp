@@ -3,29 +3,28 @@ title: "Jira MCP"
 description: "Control Jira through AI-powered LLM clients using the Model Context Protocol"
 ---
 
-Jira MCP is a Model Context Protocol server that allows AI assistants to interact with your Jira instance. Ask questions about tickets, create issues, manage sprints, and more through natural language.
+Allows AI assistants like Cursor, Claude Desktop, Windsurf, or ChatGPT to ask questions and perform actions with your Jira instance.
 
-## How it works
+## Example prompts
 
-<Steps>
-<Step title="Prompt your AI assistant">
-  You enter questions or prompts to an LLM client such as Claude Desktop, Cursor, Windsurf, or ChatGPT.
-</Step>
-
-<Step title="LLM analyzes available tools">
-  The LLM analyzes the available MCP tools and decides which one(s) to use. The
-  LLM has context of each tool and what it is meant for in human language.
-</Step>
-
-<Step title="MCP server executes commands">
-  The client executes the chosen tool(s) through the MCP server. The MCP server
-  runs locally on your machine or remotely via an endpoint.
-</Step>
-
-<Step title="Results returned to LLM">
-  The results are sent back to the LLM, which formulates a natural language response and displays data or performs actions using the MCP server.
-</Step>
-</Steps>
+<CardGroup cols={2}>
+  <Card
+    title="Show tickets assigned to me with links and a summary of progress."
+    icon="list-check"
+  />
+  <Card
+    title="What's the link and status of that ticket with the new button feature?"
+    icon="circle-question"
+  />
+  <Card
+    title="Add a comment to PROJ-456 explaining the fix in my current branch."
+    icon="comment"
+  />
+  <Card
+    title="Add this spreadsheet of user stories as story issues to PROJ. Make the stories medium priority with a due date of 2 weeks from now."
+    icon="file-import"
+  />
+</CardGroup>
 
 ## Get started
 
@@ -48,6 +47,28 @@ Set up Jira MCP with your preferred AI assistant.
     Configure Windsurf with Jira MCP.
   </Card>
 </CardGroup>
+
+## How it works
+
+<Steps>
+<Step title="Prompt your AI assistant">
+  You enter questions or commands to an LLM client such as Claude Desktop, Cursor, Windsurf, or ChatGPT.
+</Step>
+
+<Step title="LLM analyzes available tools">
+  The LLM analyzes the available MCP tools and decides which one(s) to use. The
+  LLM has context of each tool and what it is meant for in human language.
+</Step>
+
+<Step title="MCP server executes commands">
+  The client executes the chosen tool(s) through the MCP server. The MCP server
+  runs locally on your machine or remotely via an endpoint.
+</Step>
+
+<Step title="Results returned to LLM">
+  The results are sent back to the LLM, which formulates a natural language response and displays data or performs actions using the MCP server.
+</Step>
+</Steps>
 
 ## Architecture
 
