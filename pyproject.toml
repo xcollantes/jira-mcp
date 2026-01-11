@@ -28,6 +28,7 @@ line-length = 80
 
 [tool.ruff.lint]
 extend-select = [
+  "E501", # Line too long.
   "I", # isort
   "D", # Docstrings. Define the type below.
 ]
