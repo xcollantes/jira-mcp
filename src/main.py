@@ -13,6 +13,7 @@ from typing import Annotated
 import dotenv
 from mcp.server.fastmcp import FastMCP
 
+from src.__version__ import __version__
 from src.tools.tool_utils import (
     JiraTicket,
     add_comment,
@@ -449,10 +450,18 @@ def edit_ticket_tool(
 def main() -> None:
     """Main entry point for the MCP server."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        description="Jira MCP Server: Provides Jira tools for LLM clients via jira-cli."
+        prog="jira-mcp",
+        description="Jira MCP Server: Provides Jira tools for LLM clients via jira-cli.",
     )
     parser.add_argument(
         "--debug", action="store_true", help="Enable debug logging."
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version and exit.",
     )
 
     args: argparse.Namespace = parser.parse_args()
