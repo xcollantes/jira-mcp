@@ -1,5 +1,7 @@
 ![Jira MCP](/docs/images/jiramcp.png)
 
+![Claude Demo](/docs/images/claude.gif)
+
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange.svg?style=for-the-badge&logo=modelcontextprotocol&logoColor=white)](https://modelcontextprotocol.io/)
 [![pytest](https://img.shields.io/badge/pytest-000000.svg?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org/)
