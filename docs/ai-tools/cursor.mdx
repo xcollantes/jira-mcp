@@ -32,7 +32,11 @@ Add the following configuration to your MCP servers:
 {
   "mcpServers": {
     "jira": {
-      "command": "/usr/local/bin/jira-mcp"
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -51,7 +55,11 @@ Replace `/usr/local/bin/jira-mcp` with the actual path to your jira-mcp binary.
   "mcpServers": {
     "jira": {
       "command": "uv",
-      "args": ["--directory", "/ABSOLUTE/PATH/TO/jira-mcp", "run", "python", "-m", "src.main"]
+      "args": ["--directory", "/ABSOLUTE/PATH/TO/jira-mcp", "run", "python", "-m", "src.main"],
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -96,14 +104,25 @@ Once configured, you can interact with Jira using natural language in Cursor:
 
 <Accordion title="Authentication errors">
 
-Ensure your Jira credentials are set in your shell environment:
+Ensure your Jira credentials are set in the MCP configuration's `env` field:
 
-```bash
-export JIRA_API_KEY="your-api-key"
-export JIRA_AUTH_TYPE="basic"
+```json
+{
+  "mcpServers": {
+    "jira": {
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
+    }
+  }
+}
 ```
 
-Then restart Cursor to pick up the environment variables.
+<Note>
+GUI applications like Cursor do not inherit shell environment variables from `.bashrc` or `.zshrc`. Using the `env` field in the MCP configuration is the recommended approach.
+</Note>
 
 </Accordion>
 </AccordionGroup>

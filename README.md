@@ -24,28 +24,23 @@ The MCP server uses the `jira-cli` to execute Jira commands.
 Follow the installation instructions for your operating system:
 <https://github.com/ankitpokhrel/jira-cli?tab=readme-ov-file#installation>
 
-### Get Jira API Key
+### Get Jira API Token
 
 Depending on your implementation of Jira (Cloud or Self-Hosted), you will need
 to use a different authentication type.
 
-Add these to your `.bashrc` or `.zshrc` file, or other shell configuration file.
+Get your API token from: <https://id.atlassian.com/manage-profile/security/api-tokens>
 
-```bash
-# https://id.atlassian.com/manage-profile/security/api-tokens
-export JIRA_API_KEY=""
+You will need to set the following environment variables:
 
-# `bearer` for token,
-# `basic` for Jira account API token
-# `password` for Jira account password
-export JIRA_AUTH_TYPE="basic"
-```
+- `JIRA_API_TOKEN` - Your Jira API token
+- `JIRA_AUTH_TYPE` - Authentication type (`bearer` for token, `basic` for Jira
+  account API token, `password` for Jira account password)
 
-Make sure to `source` the file after adding the credentials.
-
-```bash
-source ~/.bashrc
-```
+**Recommended:** Pass these variables in your MCP client configuration using the
+`env` field (shown in the configuration examples below). This is more reliable
+than shell environment variables because GUI applications like Cursor and
+Windsurf do not inherit variables from `.bashrc` or `.zshrc`.
 
 Other ways to add credentials to your environment:
 <https://github.com/ankitpokhrel/jira-cli/discussions/356>
@@ -100,7 +95,11 @@ binary on your machine if you moved it to a different location.
 {
   "mcpServers": {
     "jira": {
-      "command": "/usr/local/bin/jira-mcp"
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -139,7 +138,11 @@ binary on your machine if you moved it to a different location.
 {
   "mcpServers": {
     "jira": {
-      "command": "/usr/local/bin/jira-mcp"
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -158,7 +161,11 @@ Add to your LLM client configuration:
 {
   "mcpServers": {
     "jira": {
-      "command": "C:\\Program Files\\jira-mcp\\jira-mcp-windows.exe"
+      "command": "C:\\Program Files\\jira-mcp\\jira-mcp-windows.exe",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -195,7 +202,11 @@ Usually the JSON file for the LLM client will look like this:
         "python",
         "-m",
         "src.main"
-      ]
+      ],
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }

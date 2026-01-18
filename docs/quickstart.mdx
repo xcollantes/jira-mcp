@@ -22,7 +22,7 @@ Add these to your `.bashrc`, `.zshrc`, or other shell configuration file:
 
 ```bash
 # https://id.atlassian.com/manage-profile/security/api-tokens
-export JIRA_API_KEY=""
+export JIRA_API_TOKEN=""
 
 # `bearer` for token,
 # `basic` for Jira account API token
@@ -41,6 +41,13 @@ source ~/.bashrc
   methods](https://github.com/ankitpokhrel/jira-cli/discussions/356) for other
   ways to configure authentication.
 </Note>
+
+<Warning>
+  GUI applications like Cursor and Windsurf do not inherit shell environment
+  variables from `.bashrc` or `.zshrc`. It is recommended to pass these
+  variables explicitly in the MCP configuration using the `env` field (shown in
+  the examples below).
+</Warning>
 
 </Step>
 
@@ -101,7 +108,11 @@ Add to your LLM client configuration:
 {
   "mcpServers": {
     "jira": {
-      "command": "/usr/local/bin/jira-mcp"
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -145,7 +156,11 @@ Add to your LLM client configuration:
 {
   "mcpServers": {
     "jira": {
-      "command": "/usr/local/bin/jira-mcp"
+      "command": "/usr/local/bin/jira-mcp",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -169,7 +184,11 @@ Add to your LLM client configuration:
 {
   "mcpServers": {
     "jira": {
-      "command": "C:\\Program Files\\jira-mcp\\jira-mcp-windows.exe"
+      "command": "C:\\Program Files\\jira-mcp\\jira-mcp-windows.exe",
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }
@@ -208,7 +227,11 @@ Add MCP server to your LLM client configuration:
         "python",
         "-m",
         "src.main"
-      ]
+      ],
+      "env": {
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_AUTH_TYPE": "basic"
+      }
     }
   }
 }

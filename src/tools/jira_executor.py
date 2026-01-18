@@ -51,7 +51,7 @@ def execute_jira_command(
             text=True,
             input=stdin_input,
             timeout=20,  # In seconds.
-            env=os.environ,  # Needed for the JIRA_API_KEY environment variable to be set.
+            env=os.environ,  # Needed for the JIRA_API_TOKEN environment variable to be set.
         )
 
         result: CommandResult = CommandResult(
