@@ -14,7 +14,7 @@ repos:
       # Run pytest.
       - id: pytest
         name: pytest
-        entry: uv run python -m pytest
+        entry: uv run --frozen python -m pytest
         language: system
         pass_filenames: false
         always_run: true
