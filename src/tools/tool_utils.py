@@ -631,15 +631,17 @@ def list_sprints(
     Returns:
         ListSprintsResult with list of sprints.
     """
+    # Note: jira-cli doesn't support --board flag. It uses the configured project.
+    # The board_id parameter is kept for API compatibility but is currently unused.
+    _ = board_id  # Suppress unused variable warning.
     args: list[str] = [
         "sprint",
         "list",
-        "--board",
-        str(board_id),
+        "--table",
         "--plain",
         "--no-headers",
         "--columns",
-        "id,name,state,startdate,enddate",
+        "id,name,start,end,state",
     ]
 
     if state:
@@ -666,14 +668,15 @@ def list_sprints(
     for line in lines:
         columns = [col.strip() for col in line.split("\t") if col.strip()]
 
+        # Columns: id, name, start, end, state.
         if len(columns) >= 3:
             sprints.append(
                 Sprint(
                     id=int(columns[0]),
                     name=columns[1],
-                    state=columns[2],
-                    start_date=columns[3] if len(columns) > 3 else None,
-                    end_date=columns[4] if len(columns) > 4 else None,
+                    start_date=columns[2] if len(columns) > 2 else None,
+                    end_date=columns[3] if len(columns) > 3 else None,
+                    state=columns[4] if len(columns) > 4 else "unknown",
                 )
             )
 

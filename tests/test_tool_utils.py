@@ -861,8 +861,9 @@ class TestListSprints:
         self, mock_execute_jira_command: MagicMock
     ) -> None:
         """Test listing sprints successfully."""
+        # Column order: id, name, start, end, state.
         mock_execute_jira_command.return_value = CommandResult(
-            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14\n456\tSprint 2\tfuture\t2024-01-15\t2024-01-28",
+            stdout="123\tSprint 1\t2024-01-01\t2024-01-14\tactive\n456\tSprint 2\t2024-01-15\t2024-01-28\tfuture",
             stderr="",
             exit_code=0,
         )
@@ -883,8 +884,9 @@ class TestListSprints:
         self, mock_execute_jira_command: MagicMock
     ) -> None:
         """Test listing sprints with state filter."""
+        # Column order: id, name, start, end, state.
         mock_execute_jira_command.return_value = CommandResult(
-            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14",
+            stdout="123\tSprint 1\t2024-01-01\t2024-01-14\tactive",
             stderr="",
             exit_code=0,
         )
@@ -899,8 +901,9 @@ class TestListSprints:
         self, mock_execute_jira_command: MagicMock
     ) -> None:
         """Test listing sprints with limit."""
+        # Column order: id, name, start, end, state.
         mock_execute_jira_command.return_value = CommandResult(
-            stdout="123\tSprint 1\tactive\t2024-01-01\t2024-01-14",
+            stdout="123\tSprint 1\t2024-01-01\t2024-01-14\tactive",
             stderr="",
             exit_code=0,
         )
@@ -958,8 +961,9 @@ class TestListSprints:
         self, mock_execute_jira_command: MagicMock
     ) -> None:
         """Test listing sprints with only required columns."""
+        # Column order: id, name, start (partial - missing end and state).
         mock_execute_jira_command.return_value = CommandResult(
-            stdout="123\tSprint 1\tactive",
+            stdout="123\tSprint 1\t2024-01-01",
             stderr="",
             exit_code=0,
         )
@@ -969,8 +973,9 @@ class TestListSprints:
         assert len(result.sprints) == 1
         assert result.sprints[0].id == 123
         assert result.sprints[0].name == "Sprint 1"
-        assert result.sprints[0].state == "active"
-        assert result.sprints[0].start_date is None
+        assert result.sprints[0].start_date == "2024-01-01"
+        assert result.sprints[0].end_date is None
+        assert result.sprints[0].state == "unknown"
         assert result.sprints[0].end_date is None
 
 
