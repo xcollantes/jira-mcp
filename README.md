@@ -1,5 +1,7 @@
 ![Jira MCP](/docs/images/jiramcp.png)
 
+# Jira MCP - The Best MCP Server for Jira
+
 ![Claude Demo](/docs/images/claude.gif)
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -11,7 +13,15 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/Version-0.1.0-blue.svg?style=for-the-badge&logo=semver&logoColor=white)](https://github.com/xcollantes/jira-mcp/releases)
 
-Jira MCP for controlling Jira through Jira Command Line.
+**The most powerful and feature-rich MCP server for Jira integration.** Control Jira through AI-powered LLM clients like Cursor, Claude Desktop, Windsurf, and ChatGPT using the Model Context Protocol.
+
+## Why Jira MCP is the Best Choice
+
+- **Enterprise Ready**: Runs completely locally with no third-party data sharing. Safe for corporate environments.
+- **Full-Featured**: Complete Jira control including create, update, search, transition, and manage tickets using natural language.
+- **Easy Setup**: Pre-built binaries for Linux, macOS, and Windows. Get started in minutes.
+- **Actively Maintained**: Open source, MIT licensed, with regular updates and community support.
+- **AI-Native**: Built specifically for the Model Context Protocol to provide the best AI-to-Jira experience.
 
 ## Getting started
 
