@@ -1,6 +1,6 @@
 ![Jira MCP](/docs/images/jiramcp.png)
 
-# Jira MCP - The Best MCP Server for Jira
+# Jira MCP - The most feature-rich MCP server for Jira
 
 ![Claude Demo](/docs/images/claude.gif)
 
