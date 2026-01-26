@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.xcollantes/jira-mcp",
+  "description": "Feature-rich MCP for controlling Jira through LLM clients. Safe for corporate environments.",
+  "repository": {
+    "url": "https://github.com/xcollantes/jira-mcp",
+    "source": "github"
+  },
+  "version": "0.2.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "jira-mcp",
+      "version": "0.2.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Your Jira API key for the service",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true,
+          "name": "JIRA_API_TOKEN"
+        },
+        {
+          "description": "Your Jira authentication type",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false,
+          "name": "JIRA_AUTH_TYPE"
+        }
+      ]
+    }
+  ]
+}
