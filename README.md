@@ -11,7 +11,7 @@
 [![uv](https://img.shields.io/badge/uv-000000.svg?style=for-the-badge&logo=uv&logoColor=white)](https://docs.astral.sh/uv/)
 [![CI](https://img.shields.io/github/actions/workflow/status/xcollantes/jira-mcp/ci.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/xcollantes/jira-mcp/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-0.1.0-blue.svg?style=for-the-badge&logo=semver&logoColor=white)](https://github.com/xcollantes/jira-mcp/releases)
+[![Version](https://img.shields.io/badge/Version-0.2.2-blue.svg?style=for-the-badge&logo=semver&logoColor=white)](https://github.com/xcollantes/jira-mcp/releases)
 
 <!-- mcp-name: io.github.xcollantes/jira-mcp -->
 
