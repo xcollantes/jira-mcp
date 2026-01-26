@@ -599,7 +599,7 @@ wheels = [
 ]
 
 [[package]]
-name = "jira-mcp"
+name = "jira-tools-mcp"
 source = { editable = "." }
 dependencies = [
     { name = "mcp", extra = ["cli"] },

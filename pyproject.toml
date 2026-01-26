@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "jira-mcp"
+name = "jira-tools-mcp"
 dynamic = ["version"]
 description = "Jira MCP for controlling Jira through Jira Command Line."
 readme = "README.md"
@@ -53,4 +53,4 @@ dev = [
 ]
 
 [project.scripts]
-jira-mcp = "src.main:main"
+jira-tools-mcp = "src.main:main"
