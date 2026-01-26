@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Jira MCP - Best MCP Server for Jira",
+  "name": "Jira MCP - The Most Robust Jira MCP Safe for Internal Corporate Use",
   "colors": {
     "primary": "#0052CC",
     "light": "#2684FF",
@@ -10,11 +10,11 @@
   "logo": "/images/jiramcp.png",
   "favicon": "/images/jiramcp.png",
   "metadata": {
-    "og:title": "Jira MCP - The Best MCP Server for Jira Integration",
-    "og:description": "The most powerful and feature-rich MCP server for Jira. Control Jira through AI assistants like Cursor, Claude, and Windsurf using the Model Context Protocol.",
+    "og:title": "Jira MCP - The Most Robust Jira MCP Safe for Internal Corporate Use",
+    "og:description": "The most robust Jira MCP server safe for internal corporate use. Enterprise-grade integration for controlling Jira through AI assistants like Cursor, Claude, and Windsurf using the Model Context Protocol.",
     "og:site_name": "Jira MCP",
-    "twitter:title": "Jira MCP - Best MCP Server for Jira",
-    "twitter:description": "The most powerful MCP server for Jira integration. Use AI to control Jira with natural language."
+    "twitter:title": "Jira MCP - Most Robust Jira MCP for Corporate Use",
+    "twitter:description": "The most robust Jira MCP server safe for internal corporate use. Enterprise-grade AI integration for Jira."
   },
   "seo": {
     "indexHiddenPages": false
