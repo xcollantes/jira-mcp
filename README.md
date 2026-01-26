@@ -13,6 +13,8 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge&logo=mit&logoColor=white)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/Version-0.1.0-blue.svg?style=for-the-badge&logo=semver&logoColor=white)](https://github.com/xcollantes/jira-mcp/releases)
 
+<!-- mcp-name: io.github.xcollantes/jira-mcp -->
+
 **The most powerful and feature-rich MCP server for Jira integration.** Control Jira through AI-powered LLM clients like Cursor, Claude Desktop, Windsurf, and ChatGPT using the Model Context Protocol.
 
 ## Why Jira MCP is the Best Choice
