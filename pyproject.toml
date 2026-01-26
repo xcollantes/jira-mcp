@@ -44,10 +44,12 @@ pythonpath = ["."]
 
 [dependency-groups]
 dev = [
+    "build>=1.4.0",
     "hatch>=1.16.2",
     "pre-commit>=4.0.0",
     "pytest>=9.0.2",
     "ruff>=0.14.11",
+    "twine>=6.2.0",
 ]
 
 [project.scripts]
